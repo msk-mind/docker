@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  hive-server:
+    image: msk-mind/docker:master 
+    ports:
+      - "10000:10000"
+    command: hiveserver2
+  hive-metastore:
+    image: msk-mind/docker:master 
+    command: hive --service metastore
+    ports:
+      - "9083:9083"
+

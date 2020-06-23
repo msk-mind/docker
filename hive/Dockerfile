@@ -10,7 +10,7 @@ ENV PATH $HIVE_HOME/bin:$PATH
 WORKDIR /opt
 
 #Install Hive and PostgreSQL JDBC
-RUN apt-get update && apt-get install -y wget procps && \
+RUN     apt-get update && apt-get install -y wget procps && \
 	wget https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	mv apache-hive-$HIVE_VERSION-bin hive && \
@@ -41,5 +41,6 @@ WORKDIR $HIVE_HOME
 EXPOSE 10000
 EXPOSE 10002
 
+# Typical operation, by default starts the metastore service, then starts the server
 # ENTRYPOINT ["bin/hive"]
 # CMD ["--service", "metastore"]
