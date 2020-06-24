@@ -3,6 +3,7 @@ hadoop fs -mkdir       /tmp
 hadoop fs -mkdir -p    /user/hive/warehhouse
 hadoop fs -chmod g+w   /tmp
 hadoop fs -chmod g+w   /user/hive/warehhouse
+hadoop fs -ls          /
 
 # start db and initialize hive schema
 service postgresql start
