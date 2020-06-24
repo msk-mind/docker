@@ -30,4 +30,5 @@ NOTE: A better way to managing permissions is needed!
 ## TODOs
 
 - update core-site.xml with hadoop cluster IP
-- update hive-site.xml with hive execution engine = spark?
+- connect to hadoop cluster yarn and/or spark/kubernetes
+- update hive-site.xml with hive execution engine = spark
