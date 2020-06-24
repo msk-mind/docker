@@ -50,11 +50,7 @@ RUN export LANGUAGE=en_US.UTF-8
 COPY startup.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/startup.sh
 
-EXPOSE 8020
-EXPOSE 9000
-EXPOSE 10000
-EXPOSE 10002
-EXPOSE 50111
+EXPOSE 8020 9000 10000 10002 50111
 
 # start postgres and create hive user and db
 USER postgres
