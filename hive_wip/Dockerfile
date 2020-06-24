@@ -49,20 +49,23 @@ RUN chown hadoop -R /home/hadoop/data \
 RUN cp /usr/share/java/postgresql-jdbc4.jar /home/hadoop/hive/lib/
 ADD conf/hive-site.xml $HIVE_HOME/conf/hive-site.xml
 
-ADD conf/tez-site.xml $HADOOP_CONF_DIR/tez-site.xml
+ADD conf/tez-site.xml    $HADOOP_CONF_DIR/tez-site.xml
 ADD conf/mapred-site.xml $HADOOP_CONF_DIR/mapred-site.xml
+ADD conf/core-site.xml   $HADOOP_CONF_DIR/core-site.xml
+
 RUN echo 'TEZ_JARS=$TEZ_HOME/*' >> $HADOOP_CONF_DIR/hadoop-env.sh
 RUN echo 'TEZ_LIB=$TEZ_HOME/lib/*' >> $HADOOP_CONF_DIR/hadoop-env.sh
 RUN echo 'export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:$TEZ_JARS:$TEZ_LIB' >> $HADOOP_CONF_DIR/hadoop-env.sh
 
 RUN echo "export HADOOP_HOME=/home/hadoop/hadoop" >> /home/hadoop/hive/bin/hive-config.sh
-RUN echo "140.163.78.220 sandbox-hdp.hortonworks.com" >> /etc/hosts
+RUN echo "127.0.0.1" >> /etc/hosts
 RUN chown hadoop -R /home/hadoop/hive
 RUN export LANGUAGE=en_US.UTF-8
 
 COPY startup.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/startup.sh
 
+EXPOSE 8020 
 EXPOSE 8088
 EXPOSE 9999
 EXPOSE 10000
