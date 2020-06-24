@@ -6,14 +6,14 @@ Basic Hive docker.
 - Hadoop 3.2.0
 - Postgres 9.6
 
-## Build docker
+## Build & run docker container
 ```
-make
+make run
 ```
 
-## Run docker
+## Stop & remove docker container
 ```
-docker run -p 8020:8020 msk-mind/hive:latest
+make clean
 ```
 
 ## Interfacing with outside hadoop nodes
