@@ -20,6 +20,7 @@ docker run -p 8020:8020 msk-mind/hive:latest
 
 Currently configured to run hadoop commands to hdfs://host.docker.internal:8020. The current user is 'root', so run:
 ```
-hdfs dfs -chown root /
+hadoop fs -mkdir /user/hive
+hdfs  dfs -chown root /user/hive
 ```
 If you want to give permission to write.
