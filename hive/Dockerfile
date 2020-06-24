@@ -1,45 +1,67 @@
-FROM openjdk:8
+FROM openjdk:8u212-jre
 
-# Allow buildtime config of HIVE_VERSION
-ARG HIVE_VERSION
-ENV HIVE_VERSION=${HIVE_VERSION:-2.3.2}
+USER root
 
-ENV HIVE_HOME /opt/hive
-ENV PATH $HIVE_HOME/bin:$PATH
+# env variables
+ENV HIVE_VERSION 2.3.7
+ENV HIVE_HOME /home/hadoop/hive
+ENV HIVE_INSTALL_DIR=$HIVE_HOME
 
-WORKDIR /opt
+# incompatible guava version with 3.2.1
+ENV HADOOP_VERSION 3.2.0
+ENV HADOOP_HOME=/home/hadoop/hadoop
+ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 
-#Install Hive and PostgreSQL JDBC
-RUN apt-get update && apt-get install -y wget procps && \
-	wget https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz && \
-	tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
-	mv apache-hive-$HIVE_VERSION-bin hive && \
-	wget https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar -O $HIVE_HOME/lib/postgresql-jdbc.jar && \
-	rm apache-hive-$HIVE_VERSION-bin.tar.gz && \
-	apt-get --purge remove -y wget && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+ENV PATH $HIVE_HOME/bin:$JAVA_HOME/bin:$HADOOP_HOME/bin:$PATH
 
+# add user
+RUN useradd -m -s /bin/bash hadoop
 
-#Spark should be compiled with Hive to be able to use it, hive-site.xml should be copied to $SPARK_HOME/conf folder
+# download source
+RUN apt-get update \
+    && apt-get install -y wget vim postgresql libpostgresql-jdbc-java
 
-#Custom configuration goes here
-ADD conf/hive-site.xml $HIVE_HOME/conf
-ADD conf/beeline-log4j2.properties $HIVE_HOME/conf
-ADD conf/hive-env.sh $HIVE_HOME/conf
-ADD conf/hive-exec-log4j2.properties $HIVE_HOME/conf
-ADD conf/hive-log4j2.properties $HIVE_HOME/conf
-ADD conf/ivysettings.xml $HIVE_HOME/conf
-ADD conf/llap-daemon-log4j2.properties $HIVE_HOME/conf
+RUN wget https://archive.apache.org/dist/hadoop/core/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz -P /home/hadoop/ \
+    && tar -xzf /home/hadoop/hadoop-$HADOOP_VERSION.tar.gz -C /home/hadoop/ \
+    && mv /home/hadoop/hadoop-$HADOOP_VERSION /home/hadoop/hadoop \
+    && rm -rf /home/hadoop/hadoop-$HADOOP_VERSION*
 
-RUN groupadd -r hive --gid=1000 && \
-    useradd -r -g hive --uid=1000 -d ${HIVE_HOME} hive && \
-    chown hive:hive -R ${HIVE_HOME}
+RUN wget https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz -P /home/hadoop/ \
+    && tar -xzf /home/hadoop/apache-hive-$HIVE_VERSION-bin.tar.gz -C /home/hadoop/ \
+    && mv /home/hadoop/apache-hive-$HIVE_VERSION-bin /home/hadoop/hive \
+    && rm -rf /home/hadoop/apache-hive-$HIVE_VERSION*
 
-USER hive
-WORKDIR $HIVE_HOME
+RUN mkdir -p /home/hadoop/data \
+    && mkdir -p /home/hadoop/hadoop/logs
+
+# permissions
+RUN chown hadoop -R /home/hadoop/data \
+    && chown hadoop -R /home/hadoop/hadoop
+
+# copy resources
+RUN cp /usr/share/java/postgresql-jdbc4.jar /home/hadoop/hive/lib/
+ADD conf/hive-site.xml $HIVE_HOME/conf/hive-site.xml
+
+RUN echo "export HADOOP_HOME=/home/hadoop/hadoop" >> /home/hadoop/hive/bin/hive-config.sh
+RUN chown hadoop -R /home/hadoop/hive
+RUN export LANGUAGE=en_US.UTF-8
+
+COPY startup.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/startup.sh
+
 EXPOSE 10000
 EXPOSE 10002
 
-# ENTRYPOINT ["bin/hive"]
-# CMD ["--service", "metastore"]
+# start postgres and create hive user and db
+USER postgres
+RUN export PATH=$PATH:/etc
+RUN service postgresql start \
+    && psql --command "CREATE USER hive WITH SUPERUSER PASSWORD 'hive';" \
+    && psql --command "CREATE DATABASE metastore"
+
+# enable remote access to postgres
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.6/main/pg_hba.conf
+
+USER root
+
+CMD startup.sh

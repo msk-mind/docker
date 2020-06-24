@@ -1,11 +1,12 @@
-
+# setup hdfs
 hadoop fs -mkdir       /tmp
 hadoop fs -mkdir       /tez
 hadoop fs -mkdir -p    /user/hive/warehhouse
 hadoop fs -chmod g+w   /tmp
 hadoop fs -chmod g+w   /tez
 hadoop fs -chmod g+w   /user/hive/warehhouse
-hadoop fs -put $HIVE_HOME/lib/hive-exec-$HIVE_VERSION.jar /home/hadoop/tez/
+hadoop fs -put $HIVE_HOME/lib/hive-exec-$HIVE_VERSION.jar /tez
+hadoop fs -put /home/hadoop/apache-tez-$TEZ_VERSION-bin.tar.gz /tez
 
 # start db and initialize hive schema
 service postgresql start
