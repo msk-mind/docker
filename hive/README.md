@@ -25,3 +25,8 @@ hdfs  dfs -chown root /user/hive
 ```
 If you want to give permission to write.
 NOTE: A better way to managing permissions is needed!
+
+
+## TODOs
+
+- update core-site.xml with hadoop cluster IP
