@@ -8,18 +8,10 @@ Basic Hive docker.
 
 ## Build docker
 ```
-docker build -t hive .
-```
-or
-```
 make
 ```
 
 ## Run docker
-```
-docker run --name hive hive:latest
-```
-or
 ```
 docker run -p 8020:8020 msk-mind/hive:latest
 ```
