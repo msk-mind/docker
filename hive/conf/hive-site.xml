@@ -35,6 +35,10 @@
     <value>false</value>
   </property>
   <property>
+    <name>hive.metastore.event.db.notification.api.auth</name>
+    <value>false</value>
+  </property>
+  <property>
      <name>datanucleus.autoCreateSchema</name>
      <value>false</value>
      <description>Creates necessary schema on a startup if one doesn't exist</description>

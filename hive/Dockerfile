@@ -51,6 +51,7 @@ RUN chmod +x /usr/local/bin/startup.sh
 
 EXPOSE 10000
 EXPOSE 10002
+EXPOSE 50111
 
 # start postgres and create hive user and db
 USER postgres
