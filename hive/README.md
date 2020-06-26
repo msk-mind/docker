@@ -6,14 +6,14 @@ Basic Hive docker.
 - Hadoop 3.2.0
 - Postgres 9.6
 
-## Build docker
+## Build & run docker container
 ```
-make
+make run
 ```
 
-## Run docker
+## Stop & remove docker container
 ```
-docker run -p 8020:8020 msk-mind/hive:latest
+make clean
 ```
 
 ## Interfacing with outside hadoop nodes
@@ -25,3 +25,10 @@ hdfs  dfs -chown root /user/hive
 ```
 If you want to give permission to write.
 NOTE: A better way to managing permissions is needed!
+
+
+## TODOs
+
+- update core-site.xml with hadoop cluster IP
+- connect to hadoop cluster yarn and/or spark/kubernetes
+- update hive-site.xml with hive execution engine = spark
