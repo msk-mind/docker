@@ -7,4 +7,8 @@ clean:
 	docker rm hive || true
 
 run: clean build
-	docker run --name hive -p 8020:8020 msk-mind/hive:latest
+	docker run --name hive \
+	-p 8020:8020 \
+	-p 10000:10000 \
+	-p 50111:50111 \
+	msk-mind/hive:latest
