@@ -24,7 +24,7 @@
   </property>
   <property>
     <name>fs.default.name</name>
-    <value>hdfs://140.163.78.220/:8020</value>
+    <value>hdfs://sandbox-hdp.hortonworks.com:8020</value>
   </property>
 </configuration>
 
