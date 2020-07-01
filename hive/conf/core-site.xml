@@ -20,10 +20,12 @@
   <property>
     <name>hadoop.tmp.dir</name>
     <value>/tmp</value>
-    <description>A base for other temporary directories</description>             
+    <description>A base for other temporary directories</description>
   </property>
-  <!-- TODO <property>
-    <name>fs.defaultFS</name>
-    <value>hdfs://replace.with.gpu.ip:8020</value>
-  </property> -->
+  <property>
+    <name>fs.default.name</name>
+    <value>hdfs://140.163.78.220/:8020</value>
+  </property>
 </configuration>
+
+
