@@ -1,3 +1,5 @@
+echo "HELLO MSK"
+
 # prepare hdfs
 hadoop fs -mkdir       /tmp
 hadoop fs -mkdir -p    /user/hive/warehouse

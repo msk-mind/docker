@@ -3,7 +3,7 @@
 <configuration>
   <property>
     <name>javax.jdo.option.ConnectionURL</name>
-    <value>jdbc:postgresql://127.0.0.1:5432/metastore</value>
+    <value>jdbc:postgresql://172.30.167.165:5432/metastore</value>
     <description>JDBC connect string for a JDBC metastore</description>
   </property>
   <property>
@@ -28,7 +28,7 @@
   </property>
   <property>
     <name>hive.metastore.uris</name>
-    <value>thrift://127.0.0.1:9083</value>
+    <value>thrift://172.30.167.165:9083</value>
   </property>
   <property>
     <name>hive.metastore.schema.verification</name>
