@@ -1,5 +1,9 @@
 # qupath bundled with stardist and tensor flow
 
+Sample data in data/sample_data has been downloaded from http://openslide.cs.cmu.edu/download/openslide-testdata/.
+
+More test data from various vendors can be found on this site.
+
 
 ## Build qupath image.
     
