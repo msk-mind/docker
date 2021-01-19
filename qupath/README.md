@@ -35,7 +35,7 @@ image=data/sample_data/CMU-1-Small-Region_2.svs run
 ```
 
 ## Cleanup docker.
-Cleans stopped/exited conntainers, unused networks, dangling images, dangling build caches
+Cleans stopped/exited containers, unused networks, dangling images, dangling build caches
 
 ```
 $ make clean
