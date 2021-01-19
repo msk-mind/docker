@@ -16,7 +16,7 @@ qupath/latest            latest                        ead3bb08477d        About
 adoptopenjdk/openjdk14   x86_64-debian-jdk-14.0.2_12   9350dbb3ad77        4 days ago           516MB
 ```
    
-## Run script in container. 
+## Run qupath script in container. 
     
 The command for executing the container has been designed to use the 'data', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths.
 
