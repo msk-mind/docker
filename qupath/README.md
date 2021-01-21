@@ -1,5 +1,9 @@
 # qupath bundled with stardist and tensor flow
 
+Sample data in data/sample_data has been downloaded from http://openslide.cs.cmu.edu/download/openslide-testdata/.
+
+More test data from various vendors can be found on this site.
+
 
 ## Build qupath image.
     
@@ -12,7 +16,7 @@ qupath/latest            latest                        ead3bb08477d        About
 adoptopenjdk/openjdk14   x86_64-debian-jdk-14.0.2_12   9350dbb3ad77        4 days ago           516MB
 ```
    
-## Run script in container. 
+## Run qupath script in container. 
     
 The command for executing the container has been designed to use the 'data', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths.
 
@@ -31,7 +35,7 @@ image=data/sample_data/CMU-1-Small-Region_2.svs run
 ```
 
 ## Cleanup docker.
-Cleans stopped/exited conntainers, unused networks, dangling images, dangling build caches
+Cleans stopped/exited containers, unused networks, dangling images, dangling build caches
 
 ```
 $ make clean
