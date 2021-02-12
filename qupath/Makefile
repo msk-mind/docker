@@ -59,9 +59,9 @@ run:    ## run a script within the container. This runs using cpus.
 build-singularity-gpu:
 	# on some machines, /home can run out of memory, so set cache directory to current working directory to avoid /home out of space errors.
 	SINGULARITY_DISABLE_CACHE=True && \
-	SINGULARITY_CACHEDIR=$(pwd) && \
-	SINGULARITY_LOCALCACHEDIR=$(pwd) &&  \
-	SINGULARITY_TMPDIR=$(pwd) && \
+	SINGULARITY_CACHEDIR=$(PWD) && \
+	SINGULARITY_LOCALCACHEDIR=$(PWD) &&  \
+	SINGULARITY_TMPDIR=$(PWD) 
 	export SINGULARITY_DISABLE_CACHE && \
 	export SINGULARITY_CACHEDIR && \
 	export SINGULARITY_LOCALCACHEDIR &&  \
