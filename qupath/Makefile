@@ -44,7 +44,7 @@ clean-image:  ## remove qupath image
 
 
 
-run:    ## run a script within the container.
+run:    ## run a script within the container. This runs using cpus.
 	docker run -it \
 	--mount source=$(PWD)/data,destination=/data,type=bind \
 	--mount source=$(PWD)/models,destination=/models,type=bind \
@@ -52,5 +52,14 @@ run:    ## run a script within the container.
 	$(host) \
 	qupath/latest \
     java -Djava.awt.headless=true -Djava.library.path=/qupath/build/dist/QuPath-0.2.3/lib/app \
-    -jar /qupath/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
+    -jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
     script --image /$(image) /$(script)
+
+
+build-singularity-gpu:
+	singularity pull docker://druvpatel/qupath-stardist:latest
+run-singularity-gpu:
+	singularity run --env TF_FORCE_GPU_ALLOW_GROWTH=true,PER_PROCESS_GPU_MEMORY_FRACTION=0.8  -B $(PWD)/data:/data,$(PWD)/models:/models,$(PWD)/scripts:/scripts  --nv $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
+	-Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app  \
+	-jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar  \
+	script --image /$(image) /$(script)
