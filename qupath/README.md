@@ -55,9 +55,9 @@ Run the image using singularity specifying script and image arguments. The comma
 
 
 ```
-make 
-script=scripts/sample_scripts/import_annot_from_api.groovy \
-image=data/HobI20-934829783117.svs run-singularity-gpu
+make
+script=scripts/sample_scripts/stardist_example.groovy \
+image=data/sample_data/CMU-1-Small-Region_2.svs run-singularity-gpu
 
 ```
 
