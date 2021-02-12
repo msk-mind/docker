@@ -16,7 +16,7 @@ qupath/latest            latest                        ead3bb08477d        About
 adoptopenjdk/openjdk14   x86_64-debian-jdk-14.0.2_12   9350dbb3ad77        4 days ago           516MB
 ```
    
-## Run qupath script in container. 
+## Run qupath script in container using Docker. 
     
 The command for executing the container has been designed to use the 'data', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths.
 
@@ -41,6 +41,25 @@ Cleans stopped/exited containers, unused networks, dangling images, dangling bui
 $ make clean
 ```
 
+## Using Singularity to run this on GPUs
+    
+This image has been prebuild on dockerhub to run via singularity.
+
+Pull the image from docker
+
+```
+make build-singularity-gpu
+```
+
+Run the image using singularity specifying script and image arguments. The command for executing the container has been designed to use the 'data', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths. Any data that needs to be referenced outside of data/ scripts/ and models/ should be mounted using the -B command. Append the new mount (comma separated) to the -B argument in the makefile under run-singularity-gpu as follows: /path/on/host:/bind/path/on/container.
+
+
+```
+make 
+script=scripts/sample_scripts/import_annot_from_api.groovy \
+image=data/HobI20-934829783117.svs run-singularity-gpu
+
+```
 
 ## Logs
 - started with adoptopenjdk:openjdk14
