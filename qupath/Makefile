@@ -46,9 +46,9 @@ clean-image:  ## remove qupath image
 
 run:    ## run a script within the container. This runs using cpus.
 	docker run -it \
-	--mount source=$(PWD)/data,destination=/data,type=bind \
-	--mount source=$(PWD)/models,destination=/models,type=bind \
-	--mount source=$(PWD)/scripts,destination=/scripts,type=bind \
+	--volume $(PWD)/data:/data \
+    --volume $(PWD)/models:/models \
+    --volume $(PWD)/scripts:/scripts \
 	$(host) \
 	qupath/latest \
     java -Djava.awt.headless=true -Djava.library.path=/qupath/build/dist/QuPath-0.2.3/lib/app \
