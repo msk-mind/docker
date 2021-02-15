@@ -44,19 +44,31 @@ clean-image:  ## remove qupath image
 
 
 
-run:    ## run a script within the container. This runs using cpus.
+run-cpu:    ## run a script within the docker container. This runs using cpus.
 	docker run -it \
-	--mount source=$(PWD)/data,destination=/data,type=bind \
-	--mount source=$(PWD)/models,destination=/models,type=bind \
-	--mount source=$(PWD)/scripts,destination=/scripts,type=bind \
+	--volume $(PWD)/data:/data \
+	--volume $(PWD)/models:/models \
+	--volume $(PWD)/scripts:/scripts \
 	$(host) \
 	qupath/latest \
-    java -Djava.awt.headless=true -Djava.library.path=/qupath/build/dist/QuPath-0.2.3/lib/app \
+    java -Djava.awt.headless=true -Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app \
     -jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
     script --image /$(image) /$(script)
 
+run-gpu:   ## run a script within the docker container. This runs using gpus.
+	docker run -it \
+	--env TF_FORCE_GPU_ALLOW_GROWTH=true --env PER_PROCESS_GPU_MEMORY_FRACTION=0.8 \
+	--volume $(PWD)/data:/data \
+	--volume $(PWD)/models:/models \
+	--volume $(PWD)/scripts:/scripts \
+	$(host) \
+	qupath/latest \
+	java -Djava.awt.headless=true -Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app \
+	-jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
+	script --image /$(image) /$(script)
 
-build-singularity-gpu:
+
+build-singularity:
 	# on some machines, /home can run out of memory, so set cache directory to current working directory to avoid /home out of space errors.
 	SINGULARITY_DISABLE_CACHE=True && \
 	SINGULARITY_CACHEDIR=$(PWD) && \
@@ -66,8 +78,16 @@ build-singularity-gpu:
 	export SINGULARITY_CACHEDIR && \
 	export SINGULARITY_LOCALCACHEDIR &&  \
 	singularity pull docker://druvpatel/qupath-stardist:latest
+
+
 run-singularity-gpu:
 	singularity run --env TF_FORCE_GPU_ALLOW_GROWTH=true,PER_PROCESS_GPU_MEMORY_FRACTION=0.8  -B $(PWD)/data:/data,$(PWD)/models:/models,$(PWD)/scripts:/scripts  --nv $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
 	-Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app  \
 	-jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar  \
+	script --image /$(image) /$(script)
+
+run-singularity-cpu:
+	singularity run -B $(PWD)/data:/data,$(PWD)/models:/models,$(PWD)/scripts:/scripts  $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
+	-Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app  \
+	-jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar  \
 	script --image /$(image) /$(script)

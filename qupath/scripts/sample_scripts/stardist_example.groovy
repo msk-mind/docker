@@ -1,4 +1,6 @@
 import qupath.tensorflow.stardist.StarDist2D
+import qupath.lib.io.GsonTools
+import static qupath.lib.gui.scripting.QPEx.*
 
 // Specify the model directory (you will need to change this!)
 def pathModel = '/models/he_heavy_augment'
@@ -31,4 +33,14 @@ if (pathObjects.isEmpty()) {
     return
 }
 stardist.detectObjects(imageData, pathObjects)
+
+boolean prettyPrint=true
+def gson = GsonTools.getInstance(prettyPrint)
+def output_detections_filepath = '/data/test.geojson'
+def celldetections = getDetectionObjects()
+// print(celldetections)
+new File(output_detections_filepath).withWriter('UTF-8'){
+    gson.toJson(celldetections, it)
+}
+
 println 'Done!'
