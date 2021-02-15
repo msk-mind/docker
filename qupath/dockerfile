@@ -1,6 +1,6 @@
 
 # https://hub.docker.com/r/adoptopenjdk/openjdk14
-FROM adoptopenjdk/openjdk14:x86_64-debian-jdk-14.0.2_12 AS qupath
+FROM adoptopenjdk/openjdk14:x86_64-debian-jdk-14.0.2_12 
 MAINTAINER MSK-MIND
 LABEL "app"="qupath"
 LABEL "version"="0.2.3"
@@ -14,7 +14,7 @@ RUN apt-get update && \
     apt-get install -y software-properties-common
 
 #install cuda 10.2
-RUN  wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-ubuntu1604.pin && \
+RUN  apt-get update && wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-ubuntu1604.pin && \
 sudo mv cuda-ubuntu1604.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
 sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub && \
 sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/ /" && \
@@ -28,7 +28,7 @@ RUN echo 'export PATH=/usr/local/cuda-10.2/bin:$PATH' >> ~/.bashrc &&  \
 
 # install cudnn7 for cuda 10.2
 ## these can be found on nvidia's website after logging in through a developer account
-## to build this docker image manually, download these files and copy them to the root /qupath directory  (the same directory as this dockerfile)
+## to build this docker image manually, download these files and copy them to the  /qupath directory  (the same directory as this dockerfile)
 ## https://developer.nvidia.com/compute/machine-learning/cudnn/secure/7.6.5.32/Production/10.2_20191118/Ubuntu16_04-x64/libcudnn7_7.6.5.32-1%2Bcuda10.2_amd64.deb
 ## https://developer.nvidia.com/compute/machine-learning/cudnn/secure/7.6.5.32/Production/10.2_20191118/Ubuntu16_04-x64/libcudnn7-dev_7.6.5.32-1%2Bcuda10.2_amd64.deb
 ## https://developer.nvidia.com/compute/machine-learning/cudnn/secure/7.6.5.32/Production/10.2_20191118/Ubuntu16_04-x64/libcudnn7-doc_7.6.5.32-1%2Bcuda10.2_amd64.deb
