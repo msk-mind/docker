@@ -20,7 +20,7 @@ make build-singularity
 Run the image using singularity specifying script and image arguments. Like the docker image, the command for executing the container has been designed to use the 'data', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths. Any data that needs to be referenced outside of data/ scripts/ and models/ should be mounted using the -B command. To do this, append the new mount (comma separated) to the -B argument in the makefile under run-singularity-cpu and/or run-singularity-gpu as follows: /path/on/host:/bind/path/on/container.
 
 
-To run with CPUs: use `run-singularity-cpu`, and use GPUs use `run-singularity-gspu`.
+To run with CPUs: use `run-singularity-cpu`, and use GPUs use `run-singularity-gpu`.
 
 Note: adding hosts is not currently supported with the singularity build. 
 
