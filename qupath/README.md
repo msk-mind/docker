@@ -5,11 +5,26 @@ More test data from various vendors can be found on this site.
 
 This repo contains a containerized version of QuPath+StarDist with GPU support. These containers can be built and run using Docker (Section 2) or Singularity (Section 1).
 
+# Overview
+
+## What is QuPath?
+QuPath is a digital image analysis platform, that can be quite useful when it comes to analyzing pathology images.  Qupath runs using Groovy-based scripts, which can be run through the UI, or in this case, headless through a docker container. 
+
+## What is StarDist?
+Stardist is a nuclear segmentation algorithm that is quite capable in detecting and segmenting cells/nuclei in pathology images. It runs using a tensorflow backend, and has some prebuilt models available to perform cellular segmentation in H&E and IF images.
+
+When running Stardist in Qupath, nuclear/cellular objects will be created as well as a dictionary of per-cell features such as staining properties ((hematoxylin and eosin staining metrics for H&E), and geometric properties (size, shape, lengths, etc)
+
+## How to write and run your own scripts
+Some example scripts have been provided to demonstrate some of the functionalities of the QuPath groovy scripting interface.
+
+`stardist_example.groovy` --> This script will run the StarDist cellular segmentation algorithm based on the given parameters in the file. This will result in cellular objects being created, as well as a dictionary of per-cell features. This script will also show how these cell objects can be exported into two different formats --  geojson  and tsv.  Exporting in geojson will export each cell's vertices outlining the cell segmentation, but this also means this file can be quite large. On the other hand, TSV does not retain the polygon cellular outlines, but is much more compact.
+
+`detection_first_run_hne_stardist_segmentation.groovy` --> This is a more advanced script that combines multiple aspects of QuPath. It runs StarDist segmentations, as well as a cellular claassifier which is able to classify these cellular objects into various classes (in this case lymphocyte vs other cell phenotypes). In addition, this script also performs whole-slide pixel classification using a basic model. The unique part about this script is that upon export, the cellular objects will contain a class (lymphocyte vs other) as well as a parent class (the regional annotation label that the cell objet is in based on the results of the pixel classifier)
 
 # Section 1: Building and Running Image with Singularity    
 This image has been prebuild on Dockerhub to run via singularity.
 
-## Section 
 
 
 ## Section 1: Part 1 -- Pull singularity image from Dockerhub
