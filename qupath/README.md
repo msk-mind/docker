@@ -9,9 +9,28 @@ This repo contains a containerized version of QuPath+StarDist with GPU support. 
 # Section 1: Building and Running Image with Singularity    
 This image has been prebuild on Dockerhub to run via singularity.
 
+## Section 
+
 
 ## Section 1: Part 1 -- Pull singularity image from Dockerhub
+There is some minor setup that needs to be done to make sure the singularity files are not downloaded to your $HOME directory (which tends to run out of space often.)
 
+First identify your {PATH_TO_WORK_DIRECTORY}. This is the path to your main working directory (on a large storge systems such as gpfs), with plenty of space for large singularity downloads.
+
+Once you've identified {PATH_TO_WORK_DIRECTORY}, add the following lines to your ~/.bashrc file, replacing {PATH_TO_WORK_DIRECTORY} with your path:
+```
+export SINGULARITY_CACHEDIR="{PATH_TO_WORK_DIRECTORY}"
+export SINGULARITY_LOCALCACHEDIR="{PATH_TO_WORK_DIRECTORY}"
+export SINGULARITY_TMPDIR="{PATH_TO_WORK_DIRECTORY}"
+```
+
+Make sure to apply these changes. This can be done with
+
+```
+source ~/.bashrc 
+```
+
+Now we can pull the singularity container with ease!
 ```
 make build-singularity
 ```
