@@ -49,6 +49,7 @@ run-cpu:    ## run a script within the docker container. This runs using cpus.
 	--volume $(PWD)/data:/data \
 	--volume $(PWD)/models:/models \
 	--volume $(PWD)/scripts:/scripts \
+	--volume $(PWD)/detections:/detections \
 	$(host) \
 	qupath/latest \
     java -Djava.awt.headless=true -Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app \
@@ -61,6 +62,7 @@ run-gpu:   ## run a script within the docker container. This runs using gpus.
 	--volume $(PWD)/data:/data \
 	--volume $(PWD)/models:/models \
 	--volume $(PWD)/scripts:/scripts \
+	--volume $(PWD)/detections:/detections \
 	$(host) \
 	qupath/latest \
 	java -Djava.awt.headless=true -Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app \
@@ -81,13 +83,13 @@ build-singularity:
 
 
 run-singularity-gpu:
-	singularity run --env TF_FORCE_GPU_ALLOW_GROWTH=true,PER_PROCESS_GPU_MEMORY_FRACTION=0.8  -B $(PWD)/data:/data,$(PWD)/models:/models,$(PWD)/scripts:/scripts  --nv $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
+	singularity run --env TF_FORCE_GPU_ALLOW_GROWTH=true,PER_PROCESS_GPU_MEMORY_FRACTION=0.8  -B $(PWD)/data:/data,$(PWD)/detections:/detections,$(PWD)/models:/models,$(PWD)/scripts:/scripts  --nv $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
 	-Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app  \
 	-jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar  \
 	script --image /$(image) /$(script)
 
 run-singularity-cpu:
-	singularity run -B $(PWD)/data:/data,$(PWD)/models:/models,$(PWD)/scripts:/scripts  $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
+	singularity run -B $(PWD)/data:/data,$(PWD)/detections:/detections,$(PWD)/models:/models,$(PWD)/scripts:/scripts  $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
 	-Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app  \
 	-jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar  \
 	script --image /$(image) /$(script)

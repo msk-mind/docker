@@ -9,7 +9,13 @@ def stardist = StarDist2D.builder(pathModel)
       .threshold(0.5)              // Prediction threshold
       .normalizePercentiles(1, 99) // Percentile normalization
       .pixelSize(0.5)              // Resolution for detection
+      .cellExpansion(3.0)          // Approximate cells based upon nucleus expansion
+      .cellConstrainScale(1.5)     // Constrain cell expansion using nucleus size
+      .measureShape()              // Add shape measurements
+      .measureIntensity()          // Add cell measurements (in all compartments)
+      .includeProbability(true)    // Add probability as a measurement (enables later filtering)
       .build()
+
 
 // Run detection for the selected objects
 def imageData = getCurrentImageData()
@@ -34,13 +40,24 @@ if (pathObjects.isEmpty()) {
 }
 stardist.detectObjects(imageData, pathObjects)
 
-boolean prettyPrint=true
-def gson = GsonTools.getInstance(prettyPrint)
-def output_detections_filepath = '/data/test.geojson'
-def celldetections = getDetectionObjects()
-// print(celldetections)
-new File(output_detections_filepath).withWriter('UTF-8'){
-    gson.toJson(celldetections, it)
-}
+
+
+def filename = GeneralTools.getNameWithoutExtension(imageData.getServer().getMetadata().getName())
+
+
+// output in geojson (warning - very large)
+// boolean prettyPrint=true
+// def gson = GsonTools.getInstance(prettyPrint)
+// def output_detections_filepath = "/detections/" + filename + "_stardist_detections.geojson"
+// def celldetections = getDetectionObjects()
+// // print(celldetections)
+// new File(output_detections_filepath).withWriter('UTF-8'){
+//     gson.toJson(celldetections, it)
+// }
+
+// output in tsv form
+
+detection_measurements_filepath = "/detections/" + filename + "_stardist_detections_and_measurements.tsv"
+saveDetectionMeasurements(detection_measurements_filepath)
 
 println 'Done!'
