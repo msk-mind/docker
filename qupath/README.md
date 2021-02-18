@@ -3,11 +3,47 @@
 Sample data in data/sample_data has been downloaded from http://openslide.cs.cmu.edu/download/openslide-testdata/.
 More test data from various vendors can be found on this site.
 
-This repo contains a containerized version of QuPath+StarDist with GPU support. These containers can be built and run using Docker (Section 1) or Singularity (Section 2).
+This repo contains a containerized version of QuPath+StarDist with GPU support. These containers can be built and run using Docker (Section 2) or Singularity (Section 1).
 
 
-# Section 1: Building and Running Image with Docker
-## Section 1: Part 1 -- Build image using Dockerfile
+# Section 1: Building and Running Image with Singularity    
+This image has been prebuild on Dockerhub to run via singularity.
+
+
+## Section 1: Part 1 -- Pull singularity image from Dockerhub
+
+```
+make build-singularity
+```
+
+## Section 1: Part 2 -- Run singularity image
+Run the image using singularity specifying script and image arguments. Like the docker image, the command for executing the container has been designed to use the 'data', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths. Any data that needs to be referenced outside of data/ scripts/ and models/ should be mounted using the -B command. To do this, append the new mount (comma separated) to the -B argument in the makefile under run-singularity-cpu and/or run-singularity-gpu as follows: /path/on/host:/bind/path/on/container.
+
+
+To run with CPUs: use `run-singularity-cpu`, and use GPUs use `run-singularity-gpu`.
+
+Note: adding hosts is not currently supported with the singularity build. 
+
+Examples:
+
+If successful, `stardist_example.groovy` will output a geojson of cell objects to data/test.geojson 
+```
+make
+script=scripts/sample_scripts/stardist_example.groovy \
+image=data/sample_data/CMU-1-Small-Region_2.svs run-singularity-cpu
+```
+
+```
+make \
+script=scripts/sample_scripts/stardist_example.groovy \
+image=data/sample_data/CMU-1-Small-Region_2.svs run-singularity-gpu
+```
+
+
+
+
+# Section 2: Building and Running Image with Docker (WIP)
+## Section 2: Part 1 -- Build image using Dockerfile
 
 For building with Docker, there is a small setup step that needs to be done. Using the following links, download these .deb files and copy them to this directory `docker/qupath/`. You will have to create a developer nvidia account in order to do this.
 
@@ -31,7 +67,7 @@ qupath/latest            latest                        ead3bb08477d        About
 adoptopenjdk/openjdk14   x86_64-debian-jdk-14.0.2_12   9350dbb3ad77        4 days ago           516MB
 ```
    
-## Section 1: Part 2 -- Run QuPath groovy script using built Docker container
+## Section 2: Part 2 -- Run QuPath groovy script using built Docker container
 
     
 The command for executing the container has been designed to use the 'data', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths.
@@ -58,45 +94,11 @@ image=data/sample_data/CMU-1-Small-Region_2.svs run-gpu
 
 
 
-## Section 1: Part 3 -- Cleanup Docker container
+## Section 2: Part 3 -- Cleanup Docker container
 Cleans stopped/exited containers, unused networks, dangling images, dangling build caches
 
 ```
 $ make clean
-```
-
-
-# Section 2: Building and Running Image with Singularity    
-This image has been prebuild on Dockerhub to run via singularity.
-
-
-## Section 2: Part 1 -- Pull singularity image from Dockerhub
-
-```
-make build-singularity
-```
-
-## Section 2: Part 2 -- Run singularity image
-Run the image using singularity specifying script and image arguments. Like the docker image, the command for executing the container has been designed to use the 'data', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths. Any data that needs to be referenced outside of data/ scripts/ and models/ should be mounted using the -B command. To do this, append the new mount (comma separated) to the -B argument in the makefile under run-singularity-cpu and/or run-singularity-gpu as follows: /path/on/host:/bind/path/on/container.
-
-
-To run with CPUs: use `run-singularity-cpu`, and use GPUs use `run-singularity-gspu`.
-
-Note: adding hosts is not currently supported with the singularity build. 
-
-Examples:
-
-If successful, `stardist_example.groovy` will output a geojson of cell objects to data/test.geojson 
-```
-make
-script=scripts/sample_scripts/stardist_example.groovy \
-image=data/sample_data/CMU-1-Small-Region_2.svs run-singularity-cpu
-```
-
-```
-make \
-script=scripts/sample_scripts/stardist_example.groovy \
-image=data/sample_data/CMU-1-Small-Region_2.svs run-singularity-gpu
 ```
 
 
