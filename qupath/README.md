@@ -20,7 +20,7 @@ Some example scripts have been provided to demonstrate some of the functionaliti
 
 `stardist_example.groovy` --> This script will run the StarDist cellular segmentation algorithm based on the given parameters in the file. This will result in cellular objects being created, as well as a dictionary of per-cell features. This script will also show how these cell objects can be exported into two different formats --  geojson  and tsv.  Exporting in geojson will export each cell's vertices outlining the cell segmentation, but this also means this file can be quite large. On the other hand, TSV does not retain the polygon cellular outlines, but is much more compact.
 
-`detection_first_run_hne_stardist_segmentation.groovy` --> This is a more advanced script that combines multiple aspects of QuPath. It runs StarDist segmentations, as well as a cellular claassifier which is able to classify these cellular objects into various classes (in this case lymphocyte vs other cell phenotypes). In addition, this script also performs whole-slide pixel classification using a basic model. The unique part about this script is that upon export, the cellular objects will contain a class (lymphocyte vs other) as well as a parent class (the regional annotation label that the cell objet is in based on the results of the pixel classifier)
+`detection_first_run_hne_stardist_segmentation.groovy` --> This is a more advanced script that combines multiple aspects of QuPath. It runs StarDist segmentations, as well as a cellular classifier which is able to classify these cellular objects into various classes (in this case lymphocyte vs other cell phenotypes). In addition, this script also performs whole-slide pixel classification using a basic model. The unique part about this script is that upon export, the cellular objects will contain a class (lymphocyte vs other) as well as a parent class (the regional annotation label that the cell objet is in based on the results of the pixel classifier)
 
 # Section 1: Building and Running Image with Singularity    
 This image has been prebuild on Dockerhub to run via singularity.
@@ -51,7 +51,7 @@ make build-singularity
 ```
 
 ## Section 1: Part 2 -- Run singularity image
-Run the image using singularity specifying script and image arguments. Like the docker image, the command for executing the container has been designed to use the 'data', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths. Any data that needs to be referenced outside of data/ scripts/ and models/ should be mounted using the -B command. To do this, append the new mount (comma separated) to the -B argument in the makefile under run-singularity-cpu and/or run-singularity-gpu as follows: /path/on/host:/bind/path/on/container.
+Run the image using singularity specifying script and image arguments. Like the docker image, the command for executing the container has been designed to use the 'data', 'scripts', 'detections', and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths. Any data that needs to be referenced outside of detections/, data/, scripts/, and models/ should be mounted using the -B command. To do this, append the new mount (comma separated) to the -B argument in the makefile under run-singularity-cpu and/or run-singularity-gpu as follows: /path/on/host:/bind/path/on/container.
 
 
 To run with CPUs: use `run-singularity-cpu`, and use GPUs use `run-singularity-gpu`.
@@ -104,7 +104,7 @@ adoptopenjdk/openjdk14   x86_64-debian-jdk-14.0.2_12   9350dbb3ad77        4 day
 ## Section 2: Part 2 -- Run QuPath groovy script using built Docker container
 
     
-The command for executing the container has been designed to use the 'data', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths.
+The command for executing the container has been designed to use the 'data', 'detections', 'scripts' and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths.
 
 If the script uses an external api, the url and IP of the api must be provided to the continer using the host argument. The host IP can be obtained from the URL using the nslookup linux command. Two or more hosts may be specified by specifying multiple host arguments. If the script does not use any external api, the host argument must be specified at least once with an empty string since it is a required argument. 
 
