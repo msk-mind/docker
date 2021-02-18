@@ -5,6 +5,8 @@ import static qupath.lib.gui.scripting.QPEx.*
 // Specify the model directory (you will need to change this!)
 def pathModel = '/models/he_heavy_augment'
 
+
+//detections
 def stardist = StarDist2D.builder(pathModel)
       .threshold(0.5)              // Prediction threshold
       .normalizePercentiles(1, 99) // Percentile normalization
