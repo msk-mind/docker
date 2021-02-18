@@ -72,11 +72,9 @@ run-gpu:   ## run a script within the docker container. This runs using gpus.
 
 build-singularity:
 	# on some machines, /home can run out of memory, so set cache directory to current working directory to avoid /home out of space errors.
-	SINGULARITY_DISABLE_CACHE=True && \
 	SINGULARITY_CACHEDIR=$(PWD) && \
 	SINGULARITY_LOCALCACHEDIR=$(PWD) &&  \
 	SINGULARITY_TMPDIR=$(PWD) 
-	export SINGULARITY_DISABLE_CACHE && \
 	export SINGULARITY_CACHEDIR && \
 	export SINGULARITY_LOCALCACHEDIR &&  \
 	singularity pull docker://druvpatel/qupath-stardist:latest
