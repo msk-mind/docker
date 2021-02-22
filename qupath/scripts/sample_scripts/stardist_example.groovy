@@ -2,6 +2,14 @@ import qupath.tensorflow.stardist.StarDist2D
 import qupath.lib.io.GsonTools
 import static qupath.lib.gui.scripting.QPEx.*
 
+
+setImageType('BRIGHTFIELD_H_E');
+setColorDeconvolutionStains('{"Name" : "H&E default", "Stain 1" : "Hematoxylin", "Values 1" : "0.60968 0.65246 0.4501 ", "Stain 2" : "Eosin", "Values 2" : "0.21306 0.87722 0.43022 ", "Background" : " 243 243 243 "}');
+
+
+
+
+
 // Specify the model directory (you will need to change this!)
 def pathModel = '/models/he_heavy_augment'
 
@@ -16,6 +24,7 @@ def stardist = StarDist2D.builder(pathModel)
       .measureShape()              // Add shape measurements
       .measureIntensity()          // Add cell measurements (in all compartments)
       .includeProbability(true)    // Add probability as a measurement (enables later filtering)
+      .nThreads(10)
       .build()
 
 
