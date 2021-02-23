@@ -79,5 +79,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       # Needed to allow transferring data to slicer_cli_web docker containuers
       - ${TEMP:-/gpfs/mskmind_ess/dsa/tmp}:${TEMP:-/gpfs/mskmind_ess/dsa/tmp}
+      # Assetstore to reduce copying
+      - /gpfs/mskmind_ess/dsa/assetstore:/assetstore
     depends_on:
       - rabbitmq
