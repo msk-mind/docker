@@ -29,6 +29,15 @@ Database files, logs, assetstore files, and temporary files are owned by the cur
 
 Note that this example does not add any default tasks or sample files.  By default, it creates an ``admin`` user with a password of ``password``.  You can log in with the admin user and use the Slicer CLI Web plugin settings to add default tasks (e.g., ``dsarchive/histomicstk:latest``).
 
+
+Docker Compose
+--------------
+
+Volume mounts (assetstore, db, logs, tmp) directories point to GPFS mount.
+
+When adding a mount to `girder`, also add the same mount to `worker` service so that data don't have to be copied.
+
+
 Technical Details
 -----------------
 
