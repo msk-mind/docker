@@ -1,9 +1,10 @@
 USER=$(shell id -u)
+# get docker group id to avoid permission issues when installing slicer cli web
 GID=$(shell getent group docker | cut -d: -f3)
 CURRENT_UID=$(USER):$(GID)
 
 build:
-	docker-compose build \
+	CURRENT_UID=$(CURRENT_UID) docker-compose build \
 	--build-arg user=$(USER) \
 	--no-cache girder worker
 
