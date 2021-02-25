@@ -1,4 +1,6 @@
 # docker-compose.yml
+# Used to ensure container is executed using host user id and gid
+# https://medium.com/faun/set-current-host-user-for-docker-container-4e521cef9ffc
 version: '3'
 services:
   star_dist:
