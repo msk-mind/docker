@@ -1,7 +1,3 @@
-
-
-//java -jar qupath-0.2.3.jar script --image /path_to_image/image.svs /path_to_script/run_hne_stardist_segmentation.groovy
-
 import qupath.tensorflow.stardist.StarDist2D
 import qupath.lib.io.GsonTools
 import static qupath.lib.gui.scripting.QPEx.*
@@ -35,6 +31,7 @@ def stardist = StarDist2D.builder(pathModel)
       .measureShape()              // Add shape measurements
       .measureIntensity()          // Add cell measurements (in all compartments)
       .includeProbability(true)    // Add probability as a measurement (enables later filtering)
+      // .nThreads(10)
       .build()
 def imageData = getCurrentImageData()
 def server = getCurrentImageData().getServer()
@@ -53,7 +50,7 @@ selectAnnotations();
 
 
 
-// selectObjectsByClassification('Tumor','Stroma','Necrosis','Adipocytes')s
+// selectObjectsByClassification('Tumor','Stroma','Necrosis','Adipocytes')
 def pathObjects = getSelectedObjects()
 if (pathObjects.isEmpty()) {
     Dialogs.showErrorMessage("StarDist", "Please select a parent object!")
@@ -64,66 +61,34 @@ print("finished detections")
 runObjectClassifier("/models/ANN_StardistSeg3.0CellExp1.0CellConstraint_AllFeatures_LymphClassifier.json")
 print("finished lymphocyte classification")
 
-//remove rectangle roi
-// toRemove = getAnnotationObjects().findAll {
-//      return it == annotationROI
-// }
-// removeObjects(toRemove,true)
-
-
-// tissue vs glass
-selectAnnotations();
-createAnnotationsFromPixelClassifier("/models/TISSUE-GLASS_CLASSIFIER_UpdatedThresholder-HighRes.json", 50000.0, 0.0, "SPLIT", "INCLUDE_IGNORED");
+// tissue vs glass classification
+createAnnotationsFromPixelClassifier("/models/TISSUE-GLASS_CLASSIFIER_UpdatedThresholder-HighRes.json", 0.0, 0.0, "SPLIT", "INCLUDE_IGNORED");
 print("finished tissue/glass classification")
 saveAnnotationMeasurements('/detections/tissue_annotation_results.tsv')
 print("wrote tissue/glass classification to file")
-fireHierarchyUpdate()
-resolveHierarchy()
 
 writeTissueMask('Tissue');
 writeTissueMask('Glass');
 
 
-// remove cells that were detected in glass
-glassCells = getDetectionObjects().findAll {
-     return it.parent.getPathClass() == getPathClass("Glass")
-}
-tissueCells = getDetectionObjects().findAll {
-     return it.parent.getPathClass() == getPathClass("Tissue")
-}
-print(glassCells.size() + " glassCells")
-print(tissueCells.size() + " tissueCells")
+// select tissue annotation 
+def tissueAnnotations = getAnnotationObjects().findAll {it.getPathClass() == getPathClass("Tissue")}
+//This line does the selecting, and you should be able to swap in any list of objects to select
+getCurrentHierarchy().getSelectionModel().setSelectedObjects(tissueAnnotations  , null)
 
-
-
-// toRemove = getDetectionObjects().findAll {
-//      return it.parent.getPathClass() == getPathClass("Glass")
-// }
-// print(toRemove.size() + " removed glass cells")
-// removeObjects(toRemove, true)
-
-//remove glass
-removal = getAnnotationObjects().findAll{it.getPathClass().toString().contains("Glass")}
-removeObjects(removal, false)
-
-fireHierarchyUpdate()
-resolveHierarchy()
-
-print("after removal")
-glassCells = getDetectionObjects().findAll {
-     return it.parent.getPathClass() == getPathClass("Glass")
-}
-tissueCells = getDetectionObjects().findAll {
-     return it.parent.getPathClass() == getPathClass("Tissue")
-}
-print(glassCells.size() + " glassCells")
-print(tissueCells.size() + " removed glass cells")
-
-selectAnnotations();
 // tissue type classification
 createAnnotationsFromPixelClassifier("/models/simplified_classifier_26.json", 0.0, 0.0, "INCLUDE_IGNORED");
 fireHierarchyUpdate()
 resolveHierarchy()
+
+// remove cells in areas that were unclassified by the tissue-type classsifier (still labeled as "tissue" instead of more specific classes)
+toRemove = getDetectionObjects().findAll {
+	return it.parent.getPathClass() == getPathClass("Tissue")
+}
+print(toRemove.size() + " removed post-tissue-type-clf tissue-parent cells")
+removeObjects(toRemove, true)
+
+
 print("finished tissue-type classification")
 saveAnnotationMeasurements('/detections/region_annotation_results.tsv')
 print("finished writing tissue-type classification tsv ")
@@ -146,14 +111,8 @@ writeTissueMask('Tumor');
 // Save tissue image as PNG
 writeTissueImage('tissue');
 
-
-
-
-fireHierarchyUpdate()
-resolveHierarchy()
 // write cell object tsv (with tissue-type labels)
 print("started writing cell object tsv")
-selectDetections();
 saveDetectionMeasurements('/detections/object_detection_results.tsv')
 print("finished writing cell object tsv")
 
@@ -166,8 +125,6 @@ new File('/detections/object_detection_results.geojson').withWriter('UTF-8') {
     detection_gson.toJson(detections, it)
 }
 print("finished writing cell object geojson")
-
-
 
 // Define function to write tissue image — here set downsample to 20 //
 public void writeTissueImage(def tissue) {
@@ -191,14 +148,14 @@ public void writeTissueMask(def tissue) {
   // Extract ROI
   def shape_ann = getObjects { p -> p.getPathClass() == getPathClass(tissue) }
   def shapes = shape_ann.collect({RoiTools.getShape(it.getROI())})
-  print(shapes)
+  // print(shapes)
   double downsample = 20
 
   def server = getCurrentImageData().getServer()
   int w = (server.getWidth() / downsample) as int
   int h = (server.getHeight() / downsample) as int
-  print(w)
-  print(h)
+  // print(w)
+  // print(h)
 
   // Define the mask
   def imgMask = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY)
@@ -214,3 +171,4 @@ public void writeTissueMask(def tissue) {
   ImageIO.write(imgMask, 'PNG', fileOutput)
 
 }
+

@@ -86,3 +86,14 @@ run-singularity-cpu:
 	-Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app  \
 	-jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar  \
 	script --image /$(image) /$(script)
+
+
+run-gpu2:     ## run a script within the star_dist service. This run uses gpus.
+	export MYUID=$(id -u)
+	export MYGID=$(id -g)
+	docker-compose -f docker-compose.yml run \
+           -e TF_FORCE_GPU_ALLOW_GROWTH=true -e PER_PROCESS_GPU_MEMORY_FRACTION=0.8 \
+              star_dist \
+                 java -Djava.awt.headless=true -Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app \
+                    -jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
+                       script --image /$(image) /$(script)
