@@ -66,7 +66,7 @@ run-gpu:   ## run a script within the docker container. This runs using gpus.
 	$(host) \
 	qupath/latest \
 	java -Djava.awt.headless=true -Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app \
-	-jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
+	-jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
 	script --image /$(image) /$(script)
 
 

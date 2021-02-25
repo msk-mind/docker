@@ -116,7 +116,7 @@ This script can be used to import annotationss from the getPathologyAnnotations 
 ```
 make host="--add-host=<api_host_url:api_host_ip>" \
 script=scripts/sample_scripts/import_annot_from_api.groovy \
-image=data/HobI20-934829783117.svs run-cpu
+image=data/sample_data/HobI20-934829783117.svs run-cpu
 ```
 
 If successful, `stardist_example.groovy` will output a geojson of cell objects to data/test.geojson 
