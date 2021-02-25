@@ -3,7 +3,7 @@ version: '3'
 services:
   star_dist:
     image: docker.io/druvpatel/qupath-stardist
-    user: $UID:$GID
+    user: $MYUID:$MYGID
     working_dir: $PWD
     stdin_open: true
     volumes:
