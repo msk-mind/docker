@@ -40,6 +40,7 @@ RUN pip install --pre --no-cache-dir \
     girder[mount] \
     # You could add additional girder plugins here (e.g., \
     # girder-virtual-folders or girder-dicom-viewer) \
+    girder-dicom-viewer \
     # Use prebuilt wheels whenever possible \
     --find-links https://girder.github.io/large_image_wheels
 
