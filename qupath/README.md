@@ -135,6 +135,9 @@ Cleans stopped/exited containers, unused networks, dangling images, dangling bui
 $ make clean
 ```
 
+## WIP/TODOs
+- Infrastructure: currently uses single GPU but allocates all, future job scheduler with GPU allocator would be great to fully utiilize available GPUs. (To come with Condor)
+
 
 ## Logs
 - started with adoptopenjdk:openjdk14
