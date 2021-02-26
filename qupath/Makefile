@@ -1,5 +1,9 @@
 export MYUID := $(shell id -u)
 export MYGID := $(shell id -g)
+export SINGULARITY_CACHEDIR := $(PWD)/.singularity/cache
+export SINGULARITY_TMPDIR := $(PWD)/.singularity/tmp
+export SINGULARITY_LOCALCACHEDIR := $(PWD)/.singularity/lcache
+IMAGE = docker://druvpatel/qupath-stardist:latest
 
 .PHONY: all help build clean test run
 .DEFAULT_GOAL := help
@@ -28,6 +32,7 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 
+
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 help:
@@ -38,13 +43,18 @@ build:      ## build docker image
 	docker build -t qupath/latest .
 
 
+init:
+	./init_singularity_env.sh
+
+
 clean:      ## cleanup
-	docker system prune -f
+	docker system prune 
 
 
-clean-image:  ## remove qupath image
-	docker rmi -f qupath/latest
-
+clean-images:  ## remove qupath-stardist docker and singularity images. WARNING: Will affect other users!
+	docker rmi -f $(IMAGE)
+	singularity cache clean -f
+	rm qupath-stardist_latest.sif
 
 
 run-cpu:    ## run a script within the docker container. This runs using cpus.
@@ -54,10 +64,11 @@ run-cpu:    ## run a script within the docker container. This runs using cpus.
 	--volume $(PWD)/scripts:/scripts \
 	--volume $(PWD)/detections:/detections \
 	$(host) \
-	qupath/latest \
+	$(IMAGE) \
     java -Djava.awt.headless=true -Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app \
     -jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
     script --image /$(image) /$(script)
+
 
 run-gpu:   ## run a script within the docker container. This runs using gpus.
 	docker run -it \
@@ -67,24 +78,24 @@ run-gpu:   ## run a script within the docker container. This runs using gpus.
 	--volume $(PWD)/scripts:/scripts \
 	--volume $(PWD)/detections:/detections \
 	$(host) \
-	qupath/latest \
+	$(IMAGE) \
 	java -Djava.awt.headless=true -Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app \
 	-jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
 	script --image /$(image) /$(script)
 
 
-build-singularity:
-	# on some machines, /home can run out of memory, so set cache directory to current working directory to avoid /home out of space errors.
-	singularity pull docker://druvpatel/qupath-stardist:latest
+build-singularity: init  ## pulls qupath-stardist image and converts it to a singularity image
+	singularity pull --force  $(IMAGE)
+	singularity cache list -v
 
 
-run-singularity-gpu:
+run-singularity-gpu: ## runs the qupath-stardist image in gpu mode
 	singularity run --env TF_FORCE_GPU_ALLOW_GROWTH=true,PER_PROCESS_GPU_MEMORY_FRACTION=0.8  -B $(PWD)/data:/data,$(PWD)/detections:/detections,$(PWD)/models:/models,$(PWD)/scripts:/scripts  --nv $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
 	-Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app  \
 	-jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar  \
 	script --image /$(image) /$(script)
 
-run-singularity-cpu:
+run-singularity-cpu: ## runs the qupath-stardist image in cpu mode
 	singularity run -B $(PWD)/data:/data,$(PWD)/detections:/detections,$(PWD)/models:/models,$(PWD)/scripts:/scripts  $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
 	-Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app  \
 	-jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar  \
