@@ -57,31 +57,20 @@ clean-images:  ## remove qupath-stardist docker and singularity images. WARNING:
 	rm qupath-stardist_latest.sif
 
 
-run-cpu:    ## run a script within the docker container. This runs using cpus.
-	docker run -it \
-	--volume $(PWD)/data:/data \
-	--volume $(PWD)/models:/models \
-	--volume $(PWD)/scripts:/scripts \
-	--volume $(PWD)/detections:/detections \
-	$(host) \
-	$(IMAGE) \
-    java -Djava.awt.headless=true -Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app \
-    -jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
-    script --image /$(image) /$(script)
+run-cpu:     ## run a script within the star_dist service. This run uses cpus.
+	docker-compose -f docker-compose.yml run \
+           star_dist \
+              java -Djava.awt.headless=true -Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app \
+ 		-jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
+ 		  script --image /$(image) /$(script)
 
-
-run-gpu:   ## run a script within the docker container. This runs using gpus.
-	docker run -it \
-	--env TF_FORCE_GPU_ALLOW_GROWTH=true --env PER_PROCESS_GPU_MEMORY_FRACTION=0.8 \
-	--volume $(PWD)/data:/data \
-	--volume $(PWD)/models:/models \
-	--volume $(PWD)/scripts:/scripts \
-	--volume $(PWD)/detections:/detections \
-	$(host) \
-	$(IMAGE) \
-	java -Djava.awt.headless=true -Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app \
-	-jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
-	script --image /$(image) /$(script)
+run-gpu:     ## run a script within the star_dist service. This run uses gpus.
+	docker-compose -f docker-compose.yml run \
+           -e TF_FORCE_GPU_ALLOW_GROWTH=true -e PER_PROCESS_GPU_MEMORY_FRACTION=0.8 \
+              star_dist \
+                 java -Djava.awt.headless=true -Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app \
+                    -jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
+                       script --image /$(image) /$(script)
 
 
 build-singularity: init  ## pulls qupath-stardist image and converts it to a singularity image
@@ -102,11 +91,4 @@ run-singularity-cpu: ## runs the qupath-stardist image in cpu mode
 	script --image /$(image) /$(script)
 
 
-run-gpu2:     ## run a script within the star_dist service. This run uses gpus.
-	docker-compose -f docker-compose.yml run \
-           -e TF_FORCE_GPU_ALLOW_GROWTH=true -e PER_PROCESS_GPU_MEMORY_FRACTION=0.8 \
-              star_dist \
-                 java -Djava.awt.headless=true -Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app \
-                    -jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
-                       script --image /$(image) /$(script)
 
