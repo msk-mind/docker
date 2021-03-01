@@ -28,7 +28,7 @@ This image has been prebuilt on Dockerhub (as a docker image) to run via singula
 Git clone this repo.
 
 ``
-$ git clone https://github.com/msk-mind/monitoring.git
+$ git clone https://github.com/msk-mind/docker.git
 ``
 
 Change directory to this dir and initialize the local singularity environment. `init_singularity_env.sh` creates a localized singularity env in the current directory by creating a `.singularity` sub-directory. This script will need to be re-executed each time you start a new shell and want to run singularity commands against the localized environment directly from the shell, as opposed to using the targets in the makefile.
