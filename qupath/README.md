@@ -60,7 +60,7 @@ $ time make \
     image=data/sample_data/CMU-1-Small-Region_2.svs run-singularity-gpu
 ```
 
-To start from a clean slate, simply delete the `.singularity` sub-directory and re-initialize the local singularity environment by executing `init_singularity_env.sh`. 
+To restart with a clean slate, simply delete the `.singularity` sub-directory and re-initialize the local singularity environment by executing `init_singularity_env.sh`. 
 
 
 # Section 2: Building and Running Image with Docker (WIP)
