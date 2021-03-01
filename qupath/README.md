@@ -18,62 +18,49 @@ When running Stardist in Qupath, nuclear/cellular objects will be created as wel
 ## How to write and run your own scripts
 Some example scripts have been provided to demonstrate some of the functionalities of the QuPath groovy scripting interface.
 
-`stardist_example.groovy` --> This script will run the StarDist cellular segmentation algorithm based on the given parameters in the file. This will result in cellular objects being created, as well as a dictionary of per-cell features. This script will also show how these cell objects can be exported into two different formats --  geojson  and tsv.  Exporting in geojson will export each cell's vertices outlining the cell segmentation, but this also means this file can be quite large. On the other hand, TSV does not retain the polygon cellular outlines, but is much more compact.
+`stardist_example.groovy` --> This script will run the StarDist cellular segmentation algorithm based on the given parameters in the file. This will result in cellular objects being created, as well as a dictionary of per-cell features. This script will also show how these cell objects can be exported into two different formats --  geojson  and tsv.  Exporting in geojson will export each cell's vertices outlining the cell segmentation, but this also means this file can be quite large. On the other hand, TSV does not retain the polygon cellular outlines but just the coordinates of the centroid which is much more compact.
 
 `detection_first_run_hne_stardist_segmentation.groovy` --> This is a more advanced script that combines multiple aspects of QuPath. It runs StarDist segmentations, as well as a cellular classifier which is able to classify these cellular objects into various classes (in this case lymphocyte vs other cell phenotypes). In addition, this script also performs whole-slide pixel classification using a basic model. The unique part about this script is that upon export, the cellular objects will contain a class (lymphocyte vs other) as well as a parent class (the regional annotation label that the cell objet is in based on the results of the pixel classifier)
 
 # Section 1: Building and Running Image with Singularity    
-This image has been prebuild on Dockerhub to run via singularity.
+This image has been prebuilt on Dockerhub (as a docker image) to run via singularity.
 
+Git clone this repo.
 
+``
+$ git clone https://github.com/msk-mind/monitoring.git
+``
 
-## Section 1: Part 1 -- Pull singularity image from Dockerhub
-There is some minor setup that needs to be done to make sure the singularity files are not downloaded to your $HOME directory (which tends to run out of space often.)
-
-First identify your {PATH_TO_WORK_DIRECTORY}. This is the path to your main working directory (on a large storge systems such as gpfs), with plenty of space for large singularity downloads.
-
-Once you've identified {PATH_TO_WORK_DIRECTORY}, add the following lines to your ~/.bashrc file, replacing {PATH_TO_WORK_DIRECTORY} with your path:
-```
-export SINGULARITY_CACHEDIR="{PATH_TO_WORK_DIRECTORY}"
-export SINGULARITY_LOCALCACHEDIR="{PATH_TO_WORK_DIRECTORY}"
-export SINGULARITY_TMPDIR="{PATH_TO_WORK_DIRECTORY}"
-```
-
-Make sure to apply these changes. This can be done with
+Change directory to this dir and initialize the local singularity environment. `init_singularity_env.sh` creates a localized singularity env in the current directory by creating a `.singularity` sub-directory. This script will need to be re-executed each time you start a new shell and want to run singularity commands against the localized environment directly from the shell, as opposed to using the targets in the makefile.
 
 ```
-source ~/.bashrc 
+$ cd qupath
+$ ./init_singularity_env.sh
 ```
 
-Now we can pull the singularity container with ease!
-```
-make build-singularity
-```
+Build the singularity image. 
 
-## Section 1: Part 2 -- Run singularity image
-Run the image using singularity specifying script and image arguments. Like the docker image, the command for executing the container has been designed to use the 'data', 'scripts', 'detections', and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths. Any data that needs to be referenced outside of detections/, data/, scripts/, and models/ should be mounted using the -B command. To do this, append the new mount (comma separated) to the -B argument in the makefile under run-singularity-cpu and/or run-singularity-gpu as follows: /path/on/host:/bind/path/on/container.
+``
+$ make build-singularity
+``
 
+Run the singularity image by specifying the script and image arguments. Like the docker image, the command for executing the container has been designed to use the 'data', 'scripts', 'detections', and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths. Any data that needs to be referenced outside of detections/, data/, scripts/, and models/ should be mounted using the -B command. To do this, append the new mount (comma separated) to the -B argument in the makefile under run-singularity-cpu and/or run-singularity-gpu as follows: /path/on/host:/bind/path/on/container.
 
-To run with CPUs: use `run-singularity-cpu`, and use GPUs use `run-singularity-gpu`.
+If successful, `stardist_example.groovy` will output a geo coordinates of cell objects (centroids) to `detections/CMU-1-Small-Region_2_stardist_detections_and_measurements.tsv` 
+
+To run with CPUs: use `run-singularity-cpu`, and for GPUs use `run-singularity-gpu`.
+
+The first time the `run-singularity-gpu` make target is executed, it tends to take about 4 minutes. Subsequent runs tend to take 20-30 sec. 
 
 Note: adding hosts is not currently supported with the singularity build. 
 
-Examples:
-
-If successful, `stardist_example.groovy` will output a geojson of cell objects to data/test.geojson 
 ```
-make
-script=scripts/sample_scripts/stardist_example.groovy \
-image=data/sample_data/CMU-1-Small-Region_2.svs run-singularity-cpu
+$ time make \
+    script=scripts/sample_scripts/stardist_example.groovy \
+    image=data/sample_data/CMU-1-Small-Region_2.svs run-singularity-gpu
 ```
 
-```
-make \
-script=scripts/sample_scripts/stardist_example.groovy \
-image=data/sample_data/CMU-1-Small-Region_2.svs run-singularity-gpu
-```
-
-
+To start from a clean slate, simply delete the `.singularity` sub-directory and re-initialize the local singularity environment by executing `init_singularity_env.sh`. 
 
 
 # Section 2: Building and Running Image with Docker (WIP)
@@ -137,6 +124,7 @@ $ make clean
 
 ## WIP/TODOs
 - Infrastructure: currently uses single GPU but allocates all, future job scheduler with GPU allocator would be great to fully utiilize available GPUs. (To come with Condor)
+- Get GPU working for the docker image (in the event we need to use docker instead of singularity)
 
 
 ## Logs
