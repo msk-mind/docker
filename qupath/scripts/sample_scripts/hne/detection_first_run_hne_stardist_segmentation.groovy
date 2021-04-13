@@ -63,6 +63,7 @@ print("finished lymphocyte classification")
 
 // tissue vs glass classification
 createAnnotationsFromPixelClassifier("/models/TISSUE-GLASS_CLASSIFIER_UpdatedThresholder-HighRes.json", 0.0, 0.0, "SPLIT", "INCLUDE_IGNORED");
+removeObjects([annotationROI],true)
 print("finished tissue/glass classification")
 saveAnnotationMeasurements('/detections/tissue_annotation_results.tsv')
 print("wrote tissue/glass classification to file")
