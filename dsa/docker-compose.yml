@@ -16,7 +16,7 @@ services:
     command: bash -c 'python /conf/girder_config.py && girder mount /fuse && girder serve'
     volumes:
       # Default assetstore
-      - /gpfs/mskmind_ess/dsa/assetstore:/assetstore
+      - /gpfs/mskmind_ess/pathology_images:/assetstore
       # Location of girder.local.conf and girder_config.py
       - .:/conf
       # Location to store logs
@@ -80,6 +80,6 @@ services:
       # Needed to allow transferring data to slicer_cli_web docker containuers
       - ${TEMP:-/gpfs/mskmind_ess/dsa/tmp}:${TEMP:-/gpfs/mskmind_ess/dsa/tmp}
       # Assetstore to reduce copying
-      - /gpfs/mskmind_ess/dsa/assetstore:/assetstore
+      - /gpfs/mskmind_ess/pathology_images:/assetstore
     depends_on:
       - rabbitmq
