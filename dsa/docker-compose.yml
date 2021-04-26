@@ -1,6 +1,19 @@
 ---
 version: '3'
 services:
+  traefik:
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8090:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
   girder:
     build: .
     privileged: true
@@ -10,7 +23,8 @@ services:
     restart: unless-stopped
     # Set DSA_PORT to expose the interface on another port (default 8080).
     ports:
-      - "${DSA_PORT:-8080}:8080"
+      #- "${DSA_PORT:-8080}:8080"
+      - "8080-8089:8080"
     environment:
       - GIRDER_CONFIG=/conf/girder.local.conf
     command: bash -c 'python /conf/girder_config.py && girder mount /fuse && girder serve'
@@ -30,6 +44,10 @@ services:
       - /etc/passwd:/etc/passwd:ro
       # Add additional mounts here to get access to existing files on your
       # system.  Also add them to the worker container to reduce copying.
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`pllimskhpc2`)"
+      - "traefik.http.routers.whoami.entrypoints=web"  
     depends_on:
       - mongodb
       - memcached
