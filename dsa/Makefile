@@ -11,5 +11,6 @@ build:
 clean:
 	docker-compose rm -sf || true
 
+# scale girder webapp
 run: clean build
-	CURRENT_UID=$(CURRENT_UID) user=$(USER) docker-compose up -d	
+	CURRENT_UID=$(CURRENT_UID) user=$(USER) docker-compose up -d --scale girder=2	
