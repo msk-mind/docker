@@ -47,8 +47,8 @@ services:
     ### modify REPLACE_WITH_HOST
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`REPLACE_WITH_HOST`)"
-      - "traefik.http.routers.whoami.entrypoints=web"  
+      - "traefik.http.routers.girder.rule=Host(`REPLACE_WITH_HOST`)"
+      - "traefik.http.routers.girder.entrypoints=web"  
     depends_on:
       - mongodb
       - memcached
