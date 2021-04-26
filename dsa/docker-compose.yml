@@ -10,8 +10,8 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
     ports:
-      - "80:80"
-      - "8090:8080"
+      - "80:80" # HTTP port
+      - "8090:8080" # traefik UI
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
   girder:
