@@ -52,7 +52,7 @@ print 'Selected ' + getSelectedObjects().size()
 def pathModel = '/models/dsb2018_heavy_augment'
 def cell_expansion_factor = 3.0
 def threshold  = 0.5
-def cellConstrainScale = 2.0
+def cellConstrainScale = 1.5
 
 // cell = (nuclearSize * cellConstrainScale) + cellExpansion
 def stardist = StarDist2D.builder(pathModel)
