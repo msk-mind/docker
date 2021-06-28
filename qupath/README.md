@@ -109,7 +109,7 @@ image=data/sample_data/HobI20-934829783117.svs run-cpu
 If successful, `stardist_example.groovy` will output a geojson of cell objects to data/test.geojson 
 ```
 make host="" \
-script=scripts/sample_scripts/stardist_example.groovy \
+script=scripts/sample_scripts/hne/stardist_example.groovy \
 image=data/sample_data/CMU-1-Small-Region_2.svs run-gpu
 ```
 
