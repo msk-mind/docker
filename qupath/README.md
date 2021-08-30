@@ -44,7 +44,7 @@ Build the singularity image.
 $ make build-singularity
 ``
 
-Run the singularity image by specifying the script and image arguments. Like the docker image, the command for executing the container has been designed to use the 'data', 'scripts', 'detections', and 'models' directories to map these files to the container file system. These directories and files must be specified as relative paths. Any data that needs to be referenced outside of detections/, data/, scripts/, and models/ should be mounted using the -B command. To do this, append the new mount (comma separated) to the -B argument in the makefile under run-singularity-cpu and/or run-singularity-gpu as follows: /path/on/host:/bind/path/on/container.
+Run the singularity image by specifying the script and image arguments. Like the docker image, the command for executing the container has been designed to use the 'data', 'scripts', 'detections', and 'models' directories to map these files from the host file system to the container file system. These directories and files must be specified as relative paths. Any data that needs to be referenced outside of detections/, data/, scripts/, and models/ should be mounted using the -B command. To do this, append the new mount (comma separated) to the -B argument in the makefile under run-singularity-cpu and/or run-singularity-gpu as follows: /path/on/host:/bind/path/on/container.
 
 If successful, `stardist_example.groovy` will output a geo coordinates of cell objects (centroids) to `detections/CMU-1-Small-Region_2_stardist_detections_and_measurements.tsv` 
 
