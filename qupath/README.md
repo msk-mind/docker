@@ -5,6 +5,11 @@ More test data from various vendors can be found on this site.
 
 This repo contains a containerized version of QuPath+StarDist with GPU support. These containers can be built and run using Docker (Section 2) or Singularity (Section 1).
 
+# Prerequisites
+
+1. Docker or Singularity
+2. Java 1.8
+
 # Overview
 
 ## What is QuPath?
