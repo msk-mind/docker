@@ -91,8 +91,8 @@ def get_sample_data(adminUser, collName='Sample Images', folderName='Images'):
 
     # 1. download zip from gdrive
     zipfile_dest = "./sample_data.zip"
-    download_file_from_google_drive("1SG-0SNtVd2B8Iqda6HbedFunDyewd1Tt", zipfile_dest)
-
+    download_file_from_google_drive("1BCaZ24awqsVVwuS-0WP96UGMzkoW1CY1", zipfile_dest)
+    # https://drive.google.com/file/d/1BCaZ24awqsVVwuS-0WP96UGMzkoW1CY1/view?usp=sharing    
     # 2. unzip
     unzipped_folder = "./sample_data"
     import zipfile
@@ -102,31 +102,33 @@ def get_sample_data(adminUser, collName='Sample Images', folderName='Images'):
     # 3. upload image/anntoation to girder
     for filename in glob.glob(unzipped_folder+"/*svs"):
         fname = Path(filename).name
+        # Check if item is already created
+        if Item().findOne({'name': fname}) is None:
+            
+            item = Item().createItem(fname, creator=adminUser, folder=folder)
+            # upload iamge
+            Upload().uploadFromFile(
+                        open(filename, 'rb'), os.path.getsize(filename),
+                        name=fname, parentType='item',
+                        parent=item, user=adminUser)
 
-        item = Item().createItem(fname, creator=adminUser, folder=folder)
-        # upload iamge
-        Upload().uploadFromFile(
-                    open(filename, 'rb'), os.path.getsize(filename),
-                    name=fname, parentType='item',
-                    parent=item, user=adminUser)
 
+            # make large item
+            if 'largeImage' not in item:
+                logger.info('Making large_item %s', item['name'])
+                try:
+                    # get File attached to the item
+                    girder_file = item.childFiles(item, limit=1)
+                    ImageItem().createImageItem(item, girder_file, user=adminUser, createJob=False)
+                except Exception:
+                    pass
 
-        # make large item
-        if 'largeImage' not in item:
-            logger.info('Making large_item %s', item['name'])
-            try:
-                # get File attached to the item
-                girder_file = item.childFiles(item, limit=1)
-                ImageItem().createImageItem(item, girder_file, user=adminUser, createJob=False)
-            except Exception:
-                pass
-
-        # upload annotation
-        annot_filename = filename[:-4]+'.annot'
-        with open(annot_filename) as annot:
-            annot_json = json.load(annot)
-        
-        Annotation().createAnnotation(item, adminUser, annot_json["annotation"])
+            # upload annotation
+            annot_filename = filename[:-4]+'.json'
+            with open(annot_filename) as annot:
+                annot_json = json.load(annot)
+            
+            Annotation().createAnnotation(item, adminUser, annot_json["annotation"])
 
     return folder
 
