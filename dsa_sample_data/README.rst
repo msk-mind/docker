@@ -3,7 +3,8 @@ Minimal Digital Slide Archive
 =============================
 
 This directory contains a docker-compose set up for a minimal installation of the Digital Slide Archive without the ability to run algorithms or other worker-based jobs.
-Sample data and annotations are made available on the platform.
+
+Sample slides from `CPTAC-OV <https://wiki.cancerimagingarchive.net/display/Public/CPTAC-OV>`_ and annotations created by a non-expert are made available on the platform.
 
 Prerequsities:
 --------------
