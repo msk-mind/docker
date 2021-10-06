@@ -1,0 +1,61 @@
+FROM ubuntu:18.04
+
+## supress interactive dialogs
+ARG DEBIAN_FRONTEND=noninteractive
+
+
+## install OS dependencies
+RUN apt update
+RUN apt install software-properties-common openslide-tools python-openslide default-jre git -y
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt install python3.9 python3-pip -y
+
+
+## create user so python packages are not being installed with root and jupyter is not executed with root
+RUN groupadd laluna
+RUN useradd -rm -d /home/laluna -s /bin/bash -g laluna -u 1001 laluna
+USER laluna
+WORKDIR /home/laluna
+ENV PATH=$PATH:/home/laluna/.local/bin
+
+
+## install luna
+RUN python3 -m pip install --user --upgrade pip setuptools wheel
+RUN git clone https://github.com/msk-mind/luna.git
+WORKDIR /home/laluna/luna
+RUN sed -i 's/pyluna-pathology/pyluna-pathology\ @\ file:\/\/localhost\/home\/laluna\/luna\/pyluna-pathology/g' setup.cfg
+RUN sed -i 's/pyluna-common/pyluna-common\ @\ file:\/\/localhost\/home\/laluna\/luna\/pyluna-common/g' pyluna-pathology/setup.cfg
+RUN python3 -m pip install .[pathology]
+
+
+## install jupyter
+RUN python3 -m pip install jupyter
+
+
+## copy tutorial files
+WORKDIR /home/laluna
+RUN mkdir classifier configs img images
+ADD classifier /home/laluna/classifier/
+ADD configs /home/laluna/configs/
+ADD img /home/laluna/img/
+RUN cp luna/docs/tutorials/*.ipynb .
+
+
+## set env vars
+ENV LUNA_HOME="/home/laluna/luna"
+ENV JAVA_HOME="/usr/bin/java"
+
+
+## verify installation
+RUN java --version
+RUN echo $JAVA_HOME
+RUN echo $LUNA_HOME
+RUN which jupyter
+RUN pip list | grep luna
+RUN python3 -c 'import luna'
+
+
+## entrypoint
+CMD jupyter notebook --ip 0.0.0.0 --notebook-dir=/home/laluna
+
+
