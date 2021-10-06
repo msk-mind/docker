@@ -13,8 +13,7 @@ RUN apt install python3.9 python3-pip -y
 
 ## create user so python packages are not being installed with root and jupyter is not executed with root
 RUN groupadd laluna
-# temp root group to allow for debugging and installation
-RUN useradd -rm -d /home/laluna -s /bin/bash -g root -G sudo -u 1001 laluna
+RUN useradd -rm -d /home/laluna -s /bin/bash -g laluna -u 1001 laluna
 USER laluna
 WORKDIR /home/laluna
 ENV PATH=$PATH:/home/laluna/.local/bin
@@ -40,7 +39,10 @@ ADD classifier /home/laluna/classifier/
 ADD configs /home/laluna/configs/
 ADD img /home/laluna/img/
 ADD notebooks /home/laluna/
-
+USER root
+RUN chown laluna:laluna /home/laluna/*.ipynb
+RUN rm /home/laluna/*.bk
+USER laluna
 
 ## set env vars
 ENV LUNA_HOME="/home/laluna/luna"
