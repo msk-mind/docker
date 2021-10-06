@@ -45,6 +45,7 @@ build:      ## build luna tutorial docker image
 	DOCKER_BUILDKIT=0 docker build -t $(IMAGE) .
 
 run:       ## run the luna-tutorial container
+	mkdir -p images
 	docker run -it --name $(CONTAINER) -v images:/home/laluna/images -p 127.0.0.1:8888:8888/tcp $(IMAGE)
 
 rm:      ## remove the stopped luna-tutorial container
