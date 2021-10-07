@@ -34,7 +34,7 @@ RUN python3 -m pip install jupyter
 
 ## copy tutorial files
 WORKDIR /home/laluna
-RUN mkdir classifier configs img images
+RUN mkdir classifier configs img
 ADD classifier /home/laluna/classifier/
 ADD configs /home/laluna/configs/
 ADD img /home/laluna/img/
