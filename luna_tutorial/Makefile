@@ -54,18 +54,12 @@ exec:      ## enter the luna-tutorial container
 	docker exec -it $(CONTAINER) /bin/bash
 
 backup:  ## backup notebook changes from luna-tutorial container to the host notebooks dir
-	mv notebooks/dataset-prep.ipynb notebooks/dataset-prep.ipynb.bk
-	mv notebooks/dsa-tools.ipynb notebooks/dsa-tools.ipynb.bk
-	mv notebooks/end-to-end-pipeline.ipynb notebooks/end-to-end-pipeline.ipynb.bk
-	mv notebooks/inference-and-visualization.ipynb notebooks/inference-and-visualization.ipynb.bk
-	mv notebooks/model-training.ipynb notebooks/model-training.ipynb.bk
-	mv notebooks/tiling.ipynb notebooks/tiling.ipynb.bk
-	rm notebooks/dataset-prep.ipynb
-	rm notebooks/dsa-tools.ipynb
-	rm notebooks/end-to-end-pipeline.ipynb
-	rm notebooks/inference-and-visualization.ipynb
-	rm notebooks/model-training.ipynb
-	rm notebooks/tiling.ipynb
+	mv -f notebooks/dataset-prep.ipynb notebooks/dataset-prep.ipynb.bk
+	mv -f notebooks/dsa-tools.ipynb notebooks/dsa-tools.ipynb.bk
+	mv -f notebooks/end-to-end-pipeline.ipynb notebooks/end-to-end-pipeline.ipynb.bk
+	mv -f notebooks/inference-and-visualization.ipynb notebooks/inference-and-visualization.ipynb.bk
+	mv -f notebooks/model-training.ipynb notebooks/model-training.ipynb.bk
+	mv -f notebooks/tiling.ipynb notebooks/tiling.ipynb.bk
 	docker cp luna-tutorial:/home/laluna/dataset-prep.ipynb notebooks/dataset-prep.ipynb
 	docker cp luna-tutorial:/home/laluna/dsa-tools.ipynb notebooks/dsa-tools.ipynb
 	docker cp luna-tutorial:/home/laluna/end-to-end-pipeline.ipynb notebooks/end-to-end-pipeline.ipynb
