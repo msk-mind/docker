@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ## install OS dependencies
 RUN apt update
-RUN apt install software-properties-common openslide-tools python-openslide default-jre git vim -y
+RUN apt install software-properties-common openslide-tools python-openslide default-jre git vim curl -y
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt install python3.9 python3-pip -y
 
@@ -46,8 +46,11 @@ USER laluna
 
 ## set env vars
 ENV LUNA_HOME="/home/laluna/luna"
-ENV JAVA_HOME="/usr/bin/java"
+# pyspark adds /bin/java
+ENV JAVA_HOME="/usr"
 ENV LANG="C.UTF-8"
+ENV PYSPARK_PYTHON="/usr/bin/python3"
+ENV PYSPARK_DRIVER_PYTHON="/usr/bin/python3"
 
 
 ## verify installation
