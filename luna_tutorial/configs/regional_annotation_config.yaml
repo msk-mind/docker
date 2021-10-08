@@ -8,18 +8,18 @@ MODALITY: pathology                                         # Data modality
 DATA_TYPE: REGIONAL_METADATA_RESULTS                        # Data type within the modality
 DATE: 2021-07-06                                            # The date on which the request was made
 ETL_TYPE: pathology_annotation_etl                          # Type of ETL
-ROOT_PATH: /gpfs/mskmindhdp_emc/user/shared_data_folder/pathology-tutorial                    # Data directory 
+ROOT_PATH: /home/laluna/                                    # Data directory
 DATASET_NAME: ""                                            # Dataset name set to empty string
 
 # Root path for tables and file transfer
-LANDING_PATH: /gpfs/mskmindhdp_emc/user/shared_data_folder/pathology-tutorial/PRO_12-123/data/regional-annotations          
+LANDING_PATH: .
 SLIDEVIEWER_API_URL: "https://slides-res.mskcc.org/"        # Slide viewer api url (must contain trailing slash)
 
 # an optional path to a SlideViewer csv file to use that lists the names of the whole slide images
 # and for which the regional annotation proxy table generator should download point annotations.
 # If this field is left blank, then the regional annotation proxy table generator will attempt to
 # download this file from SlideViewer.
-SLIDEVIEWER_CSV_FILE: /gpfs/mskmindhdp_emc/user/shared_data_folder/pathology-tutorial/configs/project_slides.csv
+SLIDEVIEWER_CSV_FILE: /home/laluna/configs/project_slides.csv
  
 CONTOUR_LEVEL: 0.5                                          # Set CONTOUR_LEVEL=0.5 to vectorize pixels
 
