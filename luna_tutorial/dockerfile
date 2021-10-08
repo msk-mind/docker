@@ -41,7 +41,7 @@ ADD img /home/laluna/img/
 ADD notebooks /home/laluna/
 USER root
 RUN chown laluna:laluna /home/laluna/*.ipynb
-RUN rm /home/laluna/*.bk
+RUN rm -f /home/laluna/*.bk
 USER laluna
 
 ## set env vars
