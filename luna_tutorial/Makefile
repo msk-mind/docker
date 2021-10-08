@@ -38,15 +38,16 @@ help:
 
 clean:      ## cleanup all images volumes and containers
 	docker system prune -a -f
+	docker system prune --volumes -f
 
 clean-image:  ## remove luna tutorial image
 	docker rmi -f $(IMAGE)
 
 build:      ## build luna tutorial docker image
-	DOCKER_BUILDKIT=0 docker build -t $(IMAGE) .
+	DOCKER_BUILDKIT=0 time docker build -t $(IMAGE) .
 
 run:       ## run the luna-tutorial container
-	mkdir -p images
+	mkdir -p data
 	docker run -it --name $(CONTAINER) -v $(PWD)/data:/home/laluna/data -p 127.0.0.1:8888:8888/tcp $(IMAGE)
 	docker rm $(CONTAINER)
 
