@@ -15,11 +15,11 @@ magnification: 20
 
 # path to model and output checkpoints
 model: 
-    model_package: data_processing.pathology.models.eng_tissuenet
+    model_package: luna.pathology.models.eng_tissuenet
     checkpoint_path: PRO_12-123/model/outputs/ckpts/ckpt_8.pt
     
 # number of classification groups for model
 n_classes: 7
 
 # path to output directory 
-root_path: /gpfs/mskmindhdp_emc/user/shared_data_folder/pathology-tutorial/PRO_12-123/tiles
+root_path: /home/laluna/PRO_12-123/tiles
