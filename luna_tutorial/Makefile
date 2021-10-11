@@ -1,5 +1,5 @@
-IMAGE=luna-tutorial:0.0.1
-CONTAINER=luna-tutorial
+IMAGE=$(USER)-luna-tutorial:0.0.1
+CONTAINER=$(USER)-luna-tutorial
 PWD=$(shell pwd)
 
 .PHONY: all help build clean test run
