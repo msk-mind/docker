@@ -23,9 +23,11 @@ ENV PATH=$PATH:/home/laluna/.local/bin
 RUN python3 -m pip install --no-cache-dir --user --upgrade pip setuptools wheel
 RUN git clone https://github.com/msk-mind/luna.git
 WORKDIR /home/laluna/luna
+RUN sed -i 's/pyluna-core/pyluna-core\ @\ file:\/\/localhost\/home\/laluna\/luna\/pyluna-core/g' setup.cfg
+RUN sed -i 's/pyluna-common/pyluna-common\ @\ file:\/\/localhost\/home\/laluna\/luna\/pyluna-common/g' pyluna-core/setup.cfg
 RUN sed -i 's/pyluna-pathology/pyluna-pathology\ @\ file:\/\/localhost\/home\/laluna\/luna\/pyluna-pathology/g' setup.cfg
 RUN sed -i 's/pyluna-common/pyluna-common\ @\ file:\/\/localhost\/home\/laluna\/luna\/pyluna-common/g' pyluna-pathology/setup.cfg
-RUN python3 -m pip install --no-cache-dir .[pathology]
+RUN python3 -m pip install --no-cache-dir --use-deprecated=legacy-resolver .[pathology]
 
 
 ## install jupyter
@@ -39,6 +41,7 @@ ADD classifier /home/laluna/classifier/
 ADD configs /home/laluna/configs/
 ADD img /home/laluna/img/
 ADD notebooks /home/laluna/
+RUN cp luna/conf/datastore.default.yml luna/conf/datastore.cfg
 USER root
 RUN chown laluna:laluna /home/laluna/*.ipynb
 RUN rm -f /home/laluna/*.bk
