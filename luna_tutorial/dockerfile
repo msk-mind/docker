@@ -5,10 +5,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 
 ## install OS dependencies
-RUN apt update
-RUN apt install software-properties-common openslide-tools python-openslide default-jre git vim curl tree -y
+RUN apt-get update
+RUN apt-get install software-properties-common openslide-tools python-openslide default-jre git vim curl tree -y
 RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt install python3.9 python3-pip -y
+RUN apt-get install python3.9 python3-pip -y
 
 
 ## create user so python packages are not being installed with root and jupyter is not executed with root
