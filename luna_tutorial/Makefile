@@ -58,15 +58,4 @@ exec:      ## enter the luna-tutorial container
 	docker exec -it $(CONTAINER) /bin/bash
 
 backup:  ## backup notebook changes from container to the host notebooks dir. need to rebuild image to bring in changes
-	[ ! -f notebooks/dataset-prep.ipynb ] || mv notebooks/dataset-prep.ipynb notebooks/dataset-prep.ipynb.bk
-	[ ! -f notebooks/dataset-prep.ipynb ] || mv notebooks/dsa-tools.ipynb notebooks/dsa-tools.ipynb.bk
-	[ ! -f notebooks/dataset-prep.ipynb ] || mv notebooks/end-to-end-pipeline.ipynb notebooks/end-to-end-pipeline.ipynb.bk
-	[ ! -f notebooks/dataset-prep.ipynb ] || mv notebooks/inference-and-visualization.ipynb notebooks/inference-and-visualization.ipynb.bk
-	[ ! -f notebooks/dataset-prep.ipynb ] || mv notebooks/model-training.ipynb notebooks/model-training.ipynb.bk
-	[ ! -f notebooks/dataset-prep.ipynb ] || mv notebooks/tiling.ipynb notebooks/tiling.ipynb.bk
-	docker cp $(CONTAINER):/home/laluna/notebooks/dataset-prep.ipynb notebooks/dataset-prep.ipynb
-	docker cp $(CONTAINER):/home/laluna/notebooks/dsa-tools.ipynb notebooks/dsa-tools.ipynb
-	docker cp $(CONTAINER):/home/laluna/notebooks/end-to-end-pipeline.ipynb notebooks/end-to-end-pipeline.ipynb
-	docker cp $(CONTAINER):/home/laluna/notebooks/inference-and-visualization.ipynb notebooks/inference-and-visualization.ipynb
-	docker cp $(CONTAINER):/home/laluna/notebooks/model-training.ipynb notebooks/model-training.ipynb
-	docker cp $(CONTAINER):/home/laluna/notebooks/tiling.ipynb notebooks/tiling.ipynb
+	./backup.sh
