@@ -26,6 +26,10 @@ if [ -f notebooks/tiling.ipynb ]
 then
 	mv notebooks/tiling.ipynb notebooks/tiling.ipynb.bk
 fi
+if [ -f notebooks/teardown.ipynb ]
+then
+        mv notebooks/teardown.ipynb notebooks/teardown.ipynb.bk
+fi
 
 # copy notebooks from container
 echo copying notebooks from container
@@ -35,6 +39,7 @@ docker cp $CONTAINER:/home/laluna/notebooks/end-to-end-pipeline.ipynb notebooks/
 docker cp $CONTAINER:/home/laluna/notebooks/inference-and-visualization.ipynb notebooks/inference-and-visualization.ipynb
 docker cp $CONTAINER:/home/laluna/notebooks/model-training.ipynb notebooks/model-training.ipynb
 docker cp $CONTAINER:/home/laluna/notebooks/tiling.ipynb notebooks/tiling.ipynb
+docker cp $CONTAINER:/home/laluna/notebooks/teardown.ipynb notebooks/teardown.ipynb
         
 # verify successful backup
 echo verifying backups
@@ -61,4 +66,8 @@ fi
 if [ ! -f notebooks/tiling.ipynb ] 
 then 
 	echo ERROR notebooks/tiling.ipynb did not get backed up!
+fi
+if [ ! -f notebooks/teardown.ipynb ]
+then
+        echo ERROR notebooks/teardown.ipynb did not get backed up!
 fi
