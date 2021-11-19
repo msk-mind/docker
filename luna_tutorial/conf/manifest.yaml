@@ -14,4 +14,4 @@ DESCRIPTION: End-to-end pathology analysis tutorial
 
 DATA_MODALITIES: pathology
 
-ROOT_PATH: /home/laluna/
+ROOT_PATH: /home/laluna/vmount

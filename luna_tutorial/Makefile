@@ -47,15 +47,17 @@ build:      ## build luna tutorial docker image
 	DOCKER_BUILDKIT=0 time docker build -t $(IMAGE) .
 
 run:       ## run the luna-tutorial container
-	mkdir -p data
-	#docker run -it --name $(CONTAINER) -v $(PWD)/data:/home/laluna/data -p 127.0.0.1:8888:8888/tcp $(IMAGE)
-	docker run -it --name $(CONTAINER) -v $(PWD)/data:/home/laluna/data -p 10.254.130.15:9191:8888/tcp $(IMAGE)
+	mkdir -p vmount
+	chmod -R o=rwx vmount/
+	#docker run -it --name $(CONTAINER) -v $(PWD)/data:/home/laluna/vmount:rw -p 127.0.0.1:8888:8888/tcp $(IMAGE)
+	docker run -it --name $(CONTAINER) -v $(PWD)/vmount:/home/laluna/vmount:rw -p 10.254.130.15:9191:8888/tcp $(IMAGE)
 	docker rm $(CONTAINER)
+	chmod -R o=rx vmount/
 
 exec:      ## enter the luna-tutorial container
 	docker exec -it $(CONTAINER) /bin/bash
 
-backup:  ## backup notebook changes from luna-tutorial container to the host notebooks dir
+backup:  ## backup notebook changes from container to the host notebooks dir. need to rebuild image to bring in changes
 	[ ! -f notebooks/dataset-prep.ipynb ] || mv notebooks/dataset-prep.ipynb notebooks/dataset-prep.ipynb.bk
 	[ ! -f notebooks/dataset-prep.ipynb ] || mv notebooks/dsa-tools.ipynb notebooks/dsa-tools.ipynb.bk
 	[ ! -f notebooks/dataset-prep.ipynb ] || mv notebooks/end-to-end-pipeline.ipynb notebooks/end-to-end-pipeline.ipynb.bk

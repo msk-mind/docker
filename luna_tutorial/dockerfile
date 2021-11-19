@@ -18,27 +18,24 @@ USER laluna
 WORKDIR /home/laluna
 ENV PATH=$PATH:/home/laluna/.local/bin
 
-
 ## install luna
 RUN python3 -m pip install --no-cache-dir --user --upgrade pip
 RUN pip install pyluna
 RUN pip install pyluna-pathology
-WORKDIR /home/laluna/luna
-
+RUN pip uninstall -y pyspark ## temp hack for getting pyspark v3.1.2 to play well with deltalake
+RUN pip install pyspark==3.1.2
 
 ## install jupyter
 RUN python3 -m pip install --no-cache-dir jupyter
 
-
 ## copy tutorial files
-WORKDIR /home/laluna
-RUN mkdir classifier configs img
+RUN mkdir -p classifier img luna/conf notebooks
 ADD classifier /home/laluna/classifier/
-ADD configs /home/laluna/configs/
+ADD conf /home/laluna/luna/conf/
 ADD img /home/laluna/img/
-ADD notebooks /home/laluna/
+ADD notebooks /home/laluna/notebooks
 USER root
-RUN chown laluna:laluna /home/laluna/*.ipynb
+RUN chown -R laluna:laluna /home/laluna/
 RUN rm -f /home/laluna/*.bk
 USER laluna
 
@@ -63,6 +60,6 @@ RUN python3 -c 'import luna'
 
 
 ## entrypoint
-CMD jupyter notebook --ip 0.0.0.0 --notebook-dir=/home/laluna
+CMD jupyter notebook --ip 0.0.0.0 --notebook-dir=/home/laluna/notebooks
 
 
