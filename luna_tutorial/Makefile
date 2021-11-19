@@ -48,11 +48,10 @@ build:      ## build luna tutorial docker image
 
 run:       ## run the luna-tutorial container
 	mkdir -p vmount
-	chmod -R o=rwx vmount/
+	#chmod -R o=rwx vmount/
 	#docker run -it --name $(CONTAINER) -v $(PWD)/data:/home/laluna/vmount:rw -p 127.0.0.1:8888:8888/tcp $(IMAGE)
-	docker run -it --name $(CONTAINER) -v $(PWD)/vmount:/home/laluna/vmount:rw -p 10.254.130.15:9191:8888/tcp $(IMAGE)
+	docker run --shm-size="100g" -it --name $(CONTAINER) -v $(PWD)/vmount:/home/laluna/vmount:rw -p 10.254.130.15:9191:8888/tcp $(IMAGE)
 	docker rm $(CONTAINER)
-	chmod -R o=rx vmount/
 
 exec:      ## enter the luna-tutorial container
 	docker exec -it $(CONTAINER) /bin/bash
