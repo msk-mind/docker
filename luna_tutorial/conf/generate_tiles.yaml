@@ -21,11 +21,12 @@ labelset: DEFAULT_LABELS
 
 # optional filter to selet subset of the tiles
 filter:
-# an otsu score is calculated using the otsu foreground/background detection algorithm commonly used to filter out the background of the slide
+    #an otsu score is calculated using the otsu foreground/background detection algorithm commonly used to filter out the background of the slide
     otsu_score: 0.5
-    
-# destination path (path to output data)
-root_path: /home/laluna/PRO_12-123/tiles
 
-# optional path to the regional annotation table
-annotation_table_path: /home/laluna/PRO_12-123/tables/REGIONAL_METADATA_RESULTS
+    # destination path (path to output data)
+    root_path: /home/laluna/vmount/PRO_12-123/tiles
+
+    # optional path to the regional annotation table
+    annotation_table_path: /home/laluna/vmount/PRO_12-123/tables/REGIONAL_METADATA_RESULTS
+
