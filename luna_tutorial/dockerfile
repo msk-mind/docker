@@ -11,7 +11,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get install python3.9 python3-pip -y
 
 
-## create user so python packages are not being installed with root and jupyter is not executed with root
+## create user so python packages are not being installed with root and jupyter is not executed with rootr
 RUN groupadd laluna
 RUN useradd -rm -d /home/laluna -s /bin/bash -g laluna -u 1001 laluna
 USER laluna
