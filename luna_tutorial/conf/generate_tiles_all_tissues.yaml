@@ -19,4 +19,4 @@ filter:
     otsu_score: 0.5
     
 # destination path (path to output data)
-root_path: /home/laluna/vmount/PRO_12-123/tiles
+root_path: /home/laluna/vmount/PRO_12-123/tables/tiles
