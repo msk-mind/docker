@@ -2,72 +2,72 @@ CONTAINER=$USER-luna-tutorial
 
 # backup notebook
 echo backing up notebooks
-if [ -f notebooks/dataset-prep.ipynb ] 
+if [ -f notebooks/1_dataset-prep.ipynb ]
 then
-	mv notebooks/dataset-prep.ipynb notebooks/dataset-prep.ipynb.bk
+	mv notebooks/1_dataset-prep.ipynb notebooks/1_dataset-prep.ipynb.bk
 fi
-if [ -f notebooks/dsa-tools.ipynb ] 
+if [ -f notebooks/2_tiling.ipynb ]
 then
-	mv notebooks/dsa-tools.ipynb notebooks/dsa-tools.ipynb.bk
-fi        
-if [ -f notebooks/end-to-end-pipeline.ipynb ] 
-then
-	mv notebooks/end-to-end-pipeline.ipynb notebooks/end-to-end-pipeline.ipynb.bk
-fi        
-if [ -f notebooks/inference-and-visualization.ipynb ] 
-then 
-	mv notebooks/inference-and-visualization.ipynb notebooks/inference-and-visualization.ipynb.bk
-fi 
-if [ -f notebooks/model-training.ipynb ] 
-then
-	mv notebooks/model-training.ipynb notebooks/model-training.ipynb.bk
-fi        
-if [ -f notebooks/tiling.ipynb ] 
-then
-	mv notebooks/tiling.ipynb notebooks/tiling.ipynb.bk
+	mv notebooks/2_tiling.ipynb notebooks/2_tiling.ipynb.bk
 fi
-if [ -f notebooks/teardown.ipynb ]
+if [ -f notebooks/3_model-training.ipynb ]
 then
-        mv notebooks/teardown.ipynb notebooks/teardown.ipynb.bk
+	mv notebooks/3_model-training.ipynb notebooks/3_model-training.ipynb.bk
+fi
+if [ -f notebooks/4_inference-and-visualization.ipynb ]
+then
+	mv notebooks/4_inference-and-visualization.ipynb notebooks/4_inference-and-visualization.ipynb.bk
+fi
+if [ -f notebooks/5_end-to-end-pipeline.ipynb ]
+then
+	mv notebooks/5_end-to-end-pipeline.ipynb notebooks/5_end-to-end-pipeline.ipynb.bk
+fi
+if [ -f notebooks/6_dsa-tools.ipynb ]
+then
+	mv notebooks/6_dsa-tools.ipynb notebooks/6_dsa-tools.ipynb.bk
+fi        
+if [ -f notebooks/7_teardown.ipynb ]
+then
+        mv notebooks/7_teardown.ipynb notebooks/7_teardown.ipynb.bk
 fi
 
 # copy notebooks from container
 echo copying notebooks from container
-docker cp $CONTAINER:/home/laluna/notebooks/dataset-prep.ipynb notebooks/dataset-prep.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/dsa-tools.ipynb notebooks/dsa-tools.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/end-to-end-pipeline.ipynb notebooks/end-to-end-pipeline.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/inference-and-visualization.ipynb notebooks/inference-and-visualization.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/model-training.ipynb notebooks/model-training.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/tiling.ipynb notebooks/tiling.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/teardown.ipynb notebooks/teardown.ipynb
+docker cp $CONTAINER:/home/laluna/notebooks/1_dataset-prep.ipynb notebooks/1_dataset-prep.ipynb
+docker cp $CONTAINER:/home/laluna/notebooks/2_tiling.ipynb notebooks/2_tiling.ipynb
+docker cp $CONTAINER:/home/laluna/notebooks/3_model-training.ipynb notebooks/3_model-training.ipynb
+docker cp $CONTAINER:/home/laluna/notebooks/4_inference-and-visualization.ipynb notebooks/4_inference-and-visualization.ipynb
+docker cp $CONTAINER:/home/laluna/notebooks/5_end-to-end-pipeline.ipynb notebooks/5_end-to-end-pipeline.ipynb
+docker cp $CONTAINER:/home/laluna/notebooks/6_dsa-tools.ipynb notebooks/6_dsa-tools.ipynb
+docker cp $CONTAINER:/home/laluna/notebooks/7_teardown.ipynb notebooks/7_teardown.ipynb
         
 # verify successful backup
 echo verifying backups
-if [ ! -f notebooks/dataset-prep.ipynb ] 
+if [ ! -f notebooks/1_dataset-prep.ipynb ]
 then
-	echo ERROR notebooks/dataset-prep.ipynb did not get backed up!
+	echo ERROR notebooks/1_dataset-prep.ipynb did not get backed up!
 fi
-if [ ! -f notebooks/dsa-tools.ipynb ] 
-then 
-	echo ERROR notebooks/dsa-tools.ipynb did not get backed up!
-fi
-if [ ! -f notebooks/end-to-end-pipeline.ipynb ] 
+if [ ! -f notebooks/2_tiling.ipynb ]
 then
-	echo ERROR notebooks/end-to-end-pipeline.ipynb did not get backed up!
+	echo ERROR notebooks/2_tiling.ipynb did not get backed up!
 fi
-if [ ! -f notebooks/inference-and-visualization.ipynb ] 
-then 
-	echo ERROR notebooks/inference-and-visualization.ipynb did not get backed up!
-fi
-if [ ! -f notebooks/model-training.ipynb ] 
-then 
-	echo ERROR notebooks/model-training.ipynb did not get backed up!
-fi
-if [ ! -f notebooks/tiling.ipynb ] 
-then 
-	echo ERROR notebooks/tiling.ipynb did not get backed up!
-fi
-if [ ! -f notebooks/teardown.ipynb ]
+if [ ! -f notebooks/3_model-training.ipynb ]
 then
-        echo ERROR notebooks/teardown.ipynb did not get backed up!
+	echo ERROR notebooks/3_model-training.ipynb did not get backed up!
+fi
+if [ ! -f notebooks/4_inference-and-visualization.ipynb ]
+then
+	echo ERROR notebooks/4_inference-and-visualization.ipynb did not get backed up!
+fi
+if [ ! -f notebooks/5_end-to-end-pipeline.ipynb ]
+then
+	echo ERROR notebooks/5_end-to-end-pipeline.ipynb did not get backed up!
+fi
+if [ ! -f notebooks/6_dsa-tools.ipynb ]
+then 
+	echo ERROR notebooks/6_dsa-tools.ipynb did not get backed up!
+fi
+if [ ! -f notebooks/7_teardown.ipynb ]
+then
+        echo ERROR notebooks/7_teardown.ipynb did not get backed up!
 fi
