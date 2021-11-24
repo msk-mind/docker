@@ -3,6 +3,11 @@ FROM ubuntu:18.04
 ## supress interactive dialogs
 ARG DEBIAN_FRONTEND=noninteractive
 
+ARG USER_ID
+ARG GROUP_ID
+ARG USER_NAME
+ARG GROUP_NAME
+RUN echo $USER_ID:$GROUP_ID $USER_NAME:$GROUP_NAME
 
 ## install OS dependencies
 RUN apt-get update
@@ -12,36 +17,36 @@ RUN apt-get install python3.9 python3-pip -y
 
 
 ## create user so python packages are not being installed with root and jupyter is not executed with rootr
-RUN groupadd laluna
-RUN useradd -rm -d /home/laluna -s /bin/bash -g laluna -u 1001 laluna
-USER laluna
-WORKDIR /home/laluna
-ENV PATH=$PATH:/home/laluna/.local/bin
+## map host user to container user so files can be easily accessed from host and container
+RUN groupadd $GROUP_NAME
+RUN useradd -l -rm -d /home/$USER_NAME -s /bin/bash -g $GROUP_NAME -u $USER_ID $USER_NAME
+USER $USER_NAME
+WORKDIR /home/$USER_NAME
+ENV PATH=$PATH:/home/$USER_NAME/.local/bin
 
 ## install luna
 RUN python3 -m pip install --no-cache-dir --user --upgrade pip
-RUN pip install pyluna
-RUN pip install pyluna-pathology
-RUN pip uninstall -y pyspark ## temp hack for getting pyspark v3.1.2 to play well with deltalake
-RUN pip install pyspark==3.1.2
-RUN pip install tensorboard sklearn ## missing in pyluna dependencies
+RUN pip3 install pillow>=8.1.1 pyluna pyluna-pathology
+RUN pip3 uninstall -y pyspark ## temp hack for getting pyspark v3.1.2 to play well with deltalake
+RUN pip3 install pyspark==3.1.2
+RUN pip3 install tensorboard sklearn ## missing in pyluna dependencies
 
 ## install jupyter
 RUN python3 -m pip install --no-cache-dir jupyter
 
 ## copy tutorial files
+RUN echo rebuild from here
 RUN mkdir -p classifier img luna/conf notebooks
-ADD classifier /home/laluna/classifier/
-ADD conf /home/laluna/luna/conf/
-ADD img /home/laluna/img/
-ADD notebooks /home/laluna/notebooks
+ADD classifier /home/$USER_NAME/classifier/
+ADD conf/* /home/$USER_NAME/luna/conf/
+ADD img/* /home/$USER_NAME/img/
+ADD notebooks/* /home/$USER_NAME/notebooks/
 USER root
-RUN chown -R laluna:laluna /home/laluna/
-RUN rm -f /home/laluna/*.bk
-USER laluna
+RUN chown -R $USERNAME:$GROUP_NAME /home/$USER_NAME
+USER $USER_NAME
 
 ## set env vars
-ENV LUNA_HOME="/home/laluna/luna"
+ENV LUNA_HOME="/home/$USER_NAME/luna"
 # pyspark adds /bin/java
 ENV JAVA_HOME="/usr"
 ENV LANG="C.UTF-8"
@@ -61,6 +66,6 @@ RUN python3 -c 'import luna'
 
 
 ## entrypoint
-CMD jupyter notebook --ip 0.0.0.0 --notebook-dir=/home/laluna/notebooks
+CMD jupyter notebook --ip 0.0.0.0 --notebook-dir=~/notebooks
 
 

@@ -1,6 +1,11 @@
 IMAGE=$(USER)-luna-tutorial:0.0.1
 CONTAINER=$(USER)-luna-tutorial
 PWD=$(shell pwd)
+USER_NAME=$(USER)
+GROUP_NAME=$(shell id -g -n $(USER))
+USER_ID=$(shell id -u)
+GROUP_ID=$(shell id -g)
+CURRENT_UID=$(USER):$(GID)
 
 .PHONY: all help build clean test run
 .DEFAULT_GOAL := help
@@ -43,17 +48,14 @@ clean:      ## cleanup all images volumes and containers
 clean-image:  ## remove luna tutorial image
 	docker rmi -f $(IMAGE)
 
-clean-vmount:  # clean the volume mount that was used by the container
-	docker run --name $(CONTAINER) -v $(PWD)/vmount:/home/laluna/vmount:rw $(IMAGE) rm -rf /home/laluna/vmount/PRO_12-123
-
 build:      ## build luna tutorial docker image
-	DOCKER_BUILDKIT=0 time docker build -t $(IMAGE) .
+	DOCKER_BUILDKIT=0 time docker build --build-arg USER_ID=$(USER_ID) --build-arg GROUP_ID=$(GROUP_ID) --build-arg USER_NAME=$(USER_NAME) --build-arg GROUP_NAME=$(GROUP_NAME) -t $(IMAGE) .
 
 run:       ## run the luna-tutorial container
 	mkdir -p vmount
 	#chmod -R o=rwx vmount/
-	#docker run -it --name $(CONTAINER) -v $(PWD)/data:/home/laluna/vmount:rw -p 127.0.0.1:8888:8888/tcp $(IMAGE)
-	docker run --shm-size="16g" -it --name $(CONTAINER) -v $(PWD)/vmount:/home/laluna/vmount:rw -p 10.254.130.15:9191:8888/tcp -p 10.254.130.15:6006:6006/tcp $(IMAGE)
+	#docker run -it --name $(CONTAINER) -v $(PWD)/data:/home/$(USER_NAME)/vmount:rw -p 127.0.0.1:8888:8888/tcp $(IMAGE)
+	docker run --shm-size="16g" -it --name $(CONTAINER) -v $(PWD)/vmount:/home/$(USER_NAME)/vmount:rw -p 10.254.130.15:9191:8888/tcp -p 10.254.130.15:6006:6006/tcp $(IMAGE)
 	docker rm $(CONTAINER)
 
 exec:      ## enter the luna-tutorial container
