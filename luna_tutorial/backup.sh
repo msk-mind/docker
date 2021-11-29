@@ -33,13 +33,13 @@ fi
 
 # copy notebooks from container
 echo copying notebooks from container
-docker cp $CONTAINER:/home/laluna/notebooks/1_dataset-prep.ipynb notebooks/1_dataset-prep.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/2_tiling.ipynb notebooks/2_tiling.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/3_model-training.ipynb notebooks/3_model-training.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/4_inference-and-visualization.ipynb notebooks/4_inference-and-visualization.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/5_end-to-end-pipeline.ipynb notebooks/5_end-to-end-pipeline.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/6_dsa-tools.ipynb notebooks/6_dsa-tools.ipynb
-docker cp $CONTAINER:/home/laluna/notebooks/7_teardown.ipynb notebooks/7_teardown.ipynb
+docker cp $CONTAINER:/home/$USER/notebooks/1_dataset-prep.ipynb notebooks/1_dataset-prep.ipynb
+docker cp $CONTAINER:/home/$USER/notebooks/2_tiling.ipynb notebooks/2_tiling.ipynb
+docker cp $CONTAINER:/home/$USER/notebooks/3_model-training.ipynb notebooks/3_model-training.ipynb
+docker cp $CONTAINER:/home/$USER/notebooks/4_inference-and-visualization.ipynb notebooks/4_inference-and-visualization.ipynb
+docker cp $CONTAINER:/home/$USER/notebooks/5_end-to-end-pipeline.ipynb notebooks/5_end-to-end-pipeline.ipynb
+docker cp $CONTAINER:/home/$USER/notebooks/6_dsa-tools.ipynb notebooks/6_dsa-tools.ipynb
+docker cp $CONTAINER:/home/$USER/notebooks/7_teardown.ipynb notebooks/7_teardown.ipynb
         
 # verify successful backup
 echo verifying backups

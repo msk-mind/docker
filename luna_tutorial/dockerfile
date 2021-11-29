@@ -35,12 +35,12 @@ RUN pip3 install tensorboard sklearn ## missing in pyluna dependencies
 RUN python3 -m pip install --no-cache-dir jupyter
 
 ## copy tutorial files
-RUN echo rebuild from here
+RUN echo rebuild from here 2
 RUN mkdir -p classifier img luna/conf notebooks
-ADD classifier /home/$USER_NAME/classifier/
-ADD conf/* /home/$USER_NAME/luna/conf/
-ADD img/* /home/$USER_NAME/img/
-ADD notebooks/* /home/$USER_NAME/notebooks/
+COPY classifier/ /home/$USER_NAME/classifier/
+COPY conf/ /home/$USER_NAME/luna/conf/
+COPY img/ /home/$USER_NAME/img/
+ADD notebooks/*.ipynb /home/$USER_NAME/notebooks/
 USER root
 RUN chown -R $USERNAME:$GROUP_NAME /home/$USER_NAME
 USER $USER_NAME
