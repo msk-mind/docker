@@ -1,7 +1,13 @@
 Luna Tutorial
 =============
-See make help. This tutorial should be launched by running the dockerized jupyter server by first building the docker image and then running a container. 
+See make help for instructions on how to build and run the tutorial docker container. 
 
 ```
 $ make help
 ```
+
+In order to run this tutorial, first build the docker image and then lauch the container. Once the container is lauched, copy the url in the container's terminal log and paste it in a browser to open the jupyterlab environment containing the tutorial notebooks. Then step through the notebooks. 
+
+**NOTE:** The tutorial image must be built from scratch by each user who wants to run the tutorial because the image is designed to mimic the host system user in the container in order to make it easy for the host system and container users to update and delete data in a shared volume mount from either the host system or the container. If an image built by one user is reused by another user, the other user may not be able to delete data generated from within the container without root permissions on the host system.  
+
+
