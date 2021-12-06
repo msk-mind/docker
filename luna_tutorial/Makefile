@@ -58,5 +58,3 @@ run:       ## run the luna-tutorial container
 exec:      ## enter the luna-tutorial container
 	docker exec -it $(CONTAINER) /bin/bash
 
-backup:  ## backup notebook changes from container to the host notebooks dir. need to rebuild image to bring in changes
-	./backup.sh
