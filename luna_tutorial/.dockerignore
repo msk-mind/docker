@@ -1,2 +1,2 @@
-data/*.svs
-data/*.tar
+*/*.svs
+*/*.tar

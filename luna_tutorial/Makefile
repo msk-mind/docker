@@ -52,7 +52,6 @@ build:      ## build luna tutorial docker image
 	DOCKER_BUILDKIT=0 time docker build --build-arg USER_ID=$(USER_ID) --build-arg GROUP_ID=$(GROUP_ID) --build-arg USER_NAME=$(USER_NAME) --build-arg GROUP_NAME=$(GROUP_NAME) -t $(IMAGE) .
 
 run:       ## run the luna-tutorial container
-	mkdir -p vmount
 	docker run -it --name $(CONTAINER) -v $(PWD)/vmount:/home/$(USER_NAME)/vmount:rw -p 127.0.0.1:8888:8888/tcp $(IMAGE)
 	docker rm $(CONTAINER)
 
