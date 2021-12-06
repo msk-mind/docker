@@ -25,8 +25,8 @@ filter:
     otsu_score: 0.5
 
 # destination path (path to output data)
-root_path: ../vmount/PRO_12-123/tables/tiles
+root_path: ../PRO_12-123/tables/tiles
 
 # optional path to the regional annotation table
-annotation_table_path: ../vmount/PRO_12-123/tables/REGIONAL_METADATA_RESULTS
+annotation_table_path: ../PRO_12-123/tables/REGIONAL_METADATA_RESULTS
 

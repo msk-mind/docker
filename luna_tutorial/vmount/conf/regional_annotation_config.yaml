@@ -8,7 +8,7 @@ MODALITY: pathology                                         # Data modality
 DATA_TYPE: REGIONAL_METADATA_RESULTS                        # Data type within the modality
 DATE: 2021-07-06                                            # The date on which the request was made
 ETL_TYPE: pathology_annotation_etl                          # Type of ETL
-ROOT_PATH: ../vmount                                        # Data directory
+ROOT_PATH: ../                                              # Data directory
 DATASET_NAME: ""                                            # Dataset name set to empty string
 
 # Root path for tables and file transfer
