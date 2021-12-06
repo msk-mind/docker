@@ -19,7 +19,7 @@ SLIDEVIEWER_API_URL: "https://slides-res.mskcc.org/"        # Slide viewer api u
 # and for which the regional annotation proxy table generator should download point annotations.
 # If this field is left blank, then the regional annotation proxy table generator will attempt to
 # download this file from SlideViewer.
-SLIDEVIEWER_CSV_FILE: ../luna/conf/project_slides.csv
+SLIDEVIEWER_CSV_FILE: ../../luna/conf/project_slides.csv
  
 CONTOUR_LEVEL: 0.5                                          # Set CONTOUR_LEVEL=0.5 to vectorize pixels
 
