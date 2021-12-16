@@ -3,14 +3,15 @@ USER=$(shell id -u)
 GID=$(shell getent group docker | cut -d: -f3)
 CURRENT_UID=$(USER):$(GID)
 
+# worker service is optional
 build:
 	CURRENT_UID=$(CURRENT_UID) docker-compose build \
 	--build-arg user=$(USER) \
-	--no-cache girder worker
+	--no-cache girder #worker
 
 clean:
 	docker-compose rm -sf || true
 
-# scale girder webapp
+# optionally, scale girder webapp
 run: clean build
-	CURRENT_UID=$(CURRENT_UID) user=$(USER) docker-compose up -d --scale girder=2	
+	CURRENT_UID=$(CURRENT_UID) user=$(USER) docker-compose up -d --scale girder=1	

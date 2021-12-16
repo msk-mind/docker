@@ -62,3 +62,13 @@ The Digital Slide Archive relies on several Girder plugins:
 - `Slicer CLI Web <https://github.com/girder/slicer_cli_web>`_.  This can run processing tasks in Docker containers.  Tasks report their capabilities via the Slicer CLI standard, listing required and optional inputs and outputs.  These tasks can be selected and configured via Girder and HistomicsUI and then run in a distributed fashion via Girder Worker.
 
 Slicer CLI Web runs tasks in Docker containers and is itself running in a Docker container (in Girder for determining options and Girder Worker to run the task).  In order to allow a process in a docker container to create another docker container, the paths the docker executable and communications sockets are mounted from the host to the docker container.  This requires that the docker container be run in privileged mode.
+
+Notes
+-----
+
+For DSA on reverse proxy, configuration was added to `girder.cfg`, and copied to `/etc/girder.cfg` in the Dockerfile to ensure the npm package static files are built with the correct `static-public-path` 
+Also, a local build is used instead of `dsarchive/dsa_common` when using reverse proxy for the same reason.
+
+https://girder.readthedocs.io/en/latest/deployment-alternatives.html 
+
+
