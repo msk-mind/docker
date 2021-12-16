@@ -58,8 +58,7 @@ services:
       - memcached
       - rabbitmq
   mongodb:
-    # fix mongo version to use WiredTiger version that has written files in /data/db
-    image: "mongo:latest" # "mongo:4.4.5" 
+    image: "mongo:latest" 
     # Set CURRENT_UID to your user id (e.g., `CURRENT_UID=$(id -u):$(id -g)`)
     # so that database files and logs are owned by yourself.
     user: ${CURRENT_UID}
