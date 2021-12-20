@@ -17,6 +17,7 @@ RUN pip install \
     histomicsui \
     large_image[sources] \
     girder-homepage \
+    girder_client \
     --find-links https://girder.github.io/large_image_wheels
 
 RUN girder build
@@ -27,4 +28,3 @@ COPY provision.py .
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 CMD python provision.py --sample-data && girder serve --database mongodb://mongodb:27017/girder
-

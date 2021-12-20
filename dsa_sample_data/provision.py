@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import tempfile
 import os
 import sys
 import glob
@@ -30,40 +31,6 @@ logger = logging.getLogger(__name__)
 # See http://docs.python.org/3.3/howto/logging.html#configuring-logging-for-a-library
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-
-# https://stackoverflow.com/questions/25010369/wget-curl-large-file-from-google-drive/39225039#39225039
-def download_file_from_google_drive(id, destination):
-    import requests
-
-    def get_confirm_token(response):
-        for key, value in response.cookies.items():
-            if key.startswith('download_warning'):
-                return value
-
-        return None
-
-    def save_response_content(response, destination):
-        CHUNK_SIZE = 32768
-
-        with open(destination, "wb") as f:
-            for chunk in response.iter_content(CHUNK_SIZE):
-                if chunk: # filter out keep-alive new chunks
-                    f.write(chunk)
-
-    URL = "https://docs.google.com/uc?export=download"
-
-    session = requests.Session()
-
-    response = session.get(URL, params = { 'id' : id }, stream = True)
-    token = get_confirm_token(response)
-
-    if token:
-        params = { 'id' : id, 'confirm' : token }
-        response = session.get(URL, params = params, stream = True)
-
-    save_response_content(response, destination)    
-
-
 def get_collection_folder(adminUser, collName, folderName):
     if Collection().findOne({'lowerName': collName.lower()}) is None:
         logger.info('Create collection %s', collName)
@@ -78,57 +45,65 @@ def get_collection_folder(adminUser, collName, folderName):
     return folder
 
 
-def get_sample_data(adminUser, collName='Sample Images', folderName='Images'):
+def get_sample_data(adminUser, collName, folderName, folderPath):
     """
     As needed, download sample data.
 
     :param adminUser: a user to create and modify collections and folders.
     :param collName: the collection name where the data will be added.
-    :param folderName: the folder name where the data will bed aded.
+    :param folderName: the folder name where the data will bed added.
+    :param folderPath: the folder path in data.kitware with sample data.
     :returns: the folder where the sample data is located.
     """
+    # folder to create
     folder = get_collection_folder(adminUser, collName, folderName)
 
-    # 1. download zip from gdrive
-    zipfile_dest = "./sample_data.zip"
-    download_file_from_google_drive("1BCaZ24awqsVVwuS-0WP96UGMzkoW1CY1", zipfile_dest)
-    # https://drive.google.com/file/d/1BCaZ24awqsVVwuS-0WP96UGMzkoW1CY1/view?usp=sharing    
-    # 2. unzip
-    unzipped_folder = "./sample_data"
-    import zipfile
-    with zipfile.ZipFile(zipfile_dest, 'r') as zip_ref:
-        zip_ref.extractall(unzipped_folder)
+    remote = girder_client.GirderClient(apiUrl='https://data.kitware.com/api/v1')
+    remoteFolder = remote.get(f"/resource/lookup?path={folderPath}")
+    # assume svs/json are named the same, and they are separate items
+    # a limitation in user folder - can't make an item large item and attach annotations.
+    all_items = list(remote.listItem(remoteFolder['_id']))
+    wsi = sorted([item for item in all_items if not item['name'].endswith('.json')], key=lambda x: x['name'])
+    annotations = sorted([item for item in all_items if item['name'].endswith('.json')], key=lambda x: x['name'])
 
-    # 3. upload image/anntoation to girder
-    for filename in glob.glob(unzipped_folder+"/*svs"):
-        fname = Path(filename).name
-        # Check if item is already created
-        if Item().findOne({'name': fname}) is None:
+    for remoteItem, remoteAnnot in zip(wsi, annotations):
+        item = Item().findOne({'folderId': folder['_id'], 'name': remoteItem['name']})
+        if item:
+            continue
             
-            item = Item().createItem(fname, creator=adminUser, folder=folder)
-            # upload iamge
-            Upload().uploadFromFile(
-                        open(filename, 'rb'), os.path.getsize(filename),
-                        name=fname, parentType='item',
-                        parent=item, user=adminUser)
+        item = Item().createItem(remoteItem['name'], creator=adminUser, folder=folder)
+        for remoteFile in remote.listFile(remoteItem['_id']):
+            with tempfile.NamedTemporaryFile() as tf:
+                fileName = tf.name
+                tf.close()
+                logger.info('Downloading %s', remoteFile['name'])
+                remote.downloadFile(remoteFile['_id'], fileName)
 
+                Upload().uploadFromFile(
+                    open(fileName, 'rb'), os.path.getsize(fileName),
+                    name=remoteItem['name'], parentType='item',
+                    parent=item, user=adminUser)
+        
+                if 'largeImage' not in item:
+                    logger.info('Making large_item %s', item['name'])
+                    try:
+                        # ImageItem().createImageItem(item, createJob=False)
+                        # get File attached to the item
+                        girder_file = item.childFiles(item, limit=1)
+                        ImageItem().createImageItem(item, girder_file, user=adminUser, createJob=False)
+                    except Exception:
+                        pass
 
-            # make large item
-            if 'largeImage' not in item:
-                logger.info('Making large_item %s', item['name'])
-                try:
-                    # get File attached to the item
-                    girder_file = item.childFiles(item, limit=1)
-                    ImageItem().createImageItem(item, girder_file, user=adminUser, createJob=False)
-                except Exception:
-                    pass
+        for remoteAnnotFile in remote.listFile(remoteAnnot['_id']):
+            with tempfile.NamedTemporaryFile() as atf:
+                annotFileName = atf.name
+                atf.close()
+                logger.info('Downloading %s', remoteAnnotFile['name'])
+                remote.downloadFile(remoteAnnotFile['_id'], annotFileName)
 
-            # upload annotation
-            annot_filename = filename[:-4]+'.json'
-            with open(annot_filename) as annot:
-                annot_json = json.load(annot)
-            
-            Annotation().createAnnotation(item, adminUser, annot_json["annotation"])
+                # annotation
+                annot = json.load(open(annotFileName, 'rb'))
+                Annotation().createAnnotation(item, adminUser, annot["annotation"])
 
     return folder
 
@@ -213,16 +188,17 @@ def provision(opts):
         get_sample_data(
             adminUser,
             getattr(opts, 'sample-collection', 'TCGA collection'),
-            getattr(opts, 'sample-folder', 'Sample Images'))
+            getattr(opts, 'sample-folder', 'Images'),
+            getattr(opts, 'download-data', '/user/doori.rose/Public/test'))
     taskFolder = get_collection_folder(adminUser, 'Tasks', 'Slicer CLI Web Tasks')
     if opts.resources:
         provision_resources(opts.resources, adminUser)
     # Show label and macro images, plus tile and internal metadata for all users
     settings = dict({
-        'worker.broker': 'amqp://guest:guest@rabbitmq',
-        'worker.backend': 'rpc://guest:guest@rabbitmq',
-        'worker.api_url': 'http://girder:8080/api/v1',
-        'worker.direct_path': True,
+        #'worker.broker': 'amqp://guest:guest@rabbitmq',
+        #'worker.backend': 'rpc://guest:guest@rabbitmq',
+        #'worker.api_url': 'http://girder:8080/api/v1',
+        #'worker.direct_path': True,
         'core.brand_name': 'Digital Slide Archive',
         'histomicsui.webroot_path': 'histomics',
         'histomicsui.alternate_webroot_path': 'histomicstk',
@@ -297,9 +273,11 @@ if __name__ == '__main__':
         '--samples', '--data', '--sample-data',
         action='store_true', help='Download sample data')
     parser.add_argument(
-        '--sample-collection', default='Sample Images', help='Sample data collection name')
+        '--sample-collection', default='TCGA collection', help='Sample data collection name')
     parser.add_argument(
         '--sample-folder', default='Images', help='Sample data folder name')
+    parser.add_argument(
+        '--download-data', default='/user/doori.rose/Public/test', help='data.kitware path with sample images')
     parser.add_argument(
         '--admin', action=YamlAction,
         help='A yaml dictionary of parameters used to create a default admin '
