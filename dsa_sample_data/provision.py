@@ -66,6 +66,10 @@ def get_sample_data(adminUser, collName, folderName, folderPath):
     wsi = sorted([item for item in all_items if not item['name'].endswith('.json')], key=lambda x: x['name'])
     annotations = sorted([item for item in all_items if item['name'].endswith('.json')], key=lambda x: x['name'])
 
+    # save slides on ~/vmount/slides
+    slide_dir = os.getenv("HOME") + "/vmount/slides"
+    os.makedirs(slide_dir, exist_ok=True)
+ 
     for remoteItem, remoteAnnot in zip(wsi, annotations):
         item = Item().findOne({'folderId': folder['_id'], 'name': remoteItem['name']})
         if item:
@@ -73,26 +77,25 @@ def get_sample_data(adminUser, collName, folderName, folderPath):
             
         item = Item().createItem(remoteItem['name'], creator=adminUser, folder=folder)
         for remoteFile in remote.listFile(remoteItem['_id']):
-            with tempfile.NamedTemporaryFile() as tf:
-                fileName = tf.name
-                tf.close()
-                logger.info('Downloading %s', remoteFile['name'])
-                remote.downloadFile(remoteFile['_id'], fileName)
+            
+            logger.info('Downloading %s', remoteFile['name'])
+            fileName = os.path.join(slide_dir, remoteFile['name'])
+            remote.downloadFile(remoteFile['_id'], fileName)
 
-                Upload().uploadFromFile(
-                    open(fileName, 'rb'), os.path.getsize(fileName),
-                    name=remoteItem['name'], parentType='item',
-                    parent=item, user=adminUser)
+            Upload().uploadFromFile(
+                open(fileName, 'rb'), os.path.getsize(fileName),
+                name=remoteItem['name'], parentType='item',
+                parent=item, user=adminUser)
         
-                if 'largeImage' not in item:
-                    logger.info('Making large_item %s', item['name'])
-                    try:
-                        # ImageItem().createImageItem(item, createJob=False)
-                        # get File attached to the item
-                        girder_file = item.childFiles(item, limit=1)
-                        ImageItem().createImageItem(item, girder_file, user=adminUser, createJob=False)
-                    except Exception:
-                        pass
+            if 'largeImage' not in item:
+                logger.info('Making large_item %s', item['name'])
+                try:
+                    # ImageItem().createImageItem(item, createJob=False)
+                    # get File attached to the item
+                    girder_file = item.childFiles(item, limit=1)
+                    ImageItem().createImageItem(item, girder_file, user=adminUser, createJob=False)
+                except Exception:
+                    pass
 
         for remoteAnnotFile in remote.listFile(remoteAnnot['_id']):
             with tempfile.NamedTemporaryFile() as atf:
