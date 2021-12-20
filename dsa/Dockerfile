@@ -50,7 +50,10 @@ RUN echo 'task_reject_on_worker_lost = True' >> /usr/local/lib/python3.7/site-pa
     echo 'task_acks_late = True' >> /usr/local/lib/python3.7/site-packages/girder_worker/celeryconfig.py
 
 # Copy a config file for girder worker
+# Copy girder.cfg for build
+# https://github.com/girder/girder/blob/ab242f1721df3b67c36be7d611e800194f6ebc86/girder/utility/config.py#L40
 COPY worker.local.cfg /usr/local/lib/python3.7/site-packages/girder_worker/worker.local.cfg
+COPY girder.cfg /etc/girder.cfg
 
 # Build the girder web client
 RUN girder build && \

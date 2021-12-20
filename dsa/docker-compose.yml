@@ -1,20 +1,23 @@
 ---
 version: '3'
 services:
-  traefik:
-    image: "traefik:v2.4"
-    container_name: "traefik"
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-    ports:
-      - "80:80" # HTTP port
-      - "8090:8080" # traefik UI
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  # (optional) traefik is used for load balancing. this can be used when scaling up girder webapp.
+  #traefik:
+  #  image: "traefik:v2.4"
+  #  container_name: "traefik"
+  #  command:
+  #    - "--api.insecure=true"
+  #    - "--providers.docker=true"
+  #    - "--providers.docker.exposedbydefault=false"
+  #    - "--entrypoints.web.address=:80"
+  #  ports:
+  #    - "80:80" # HTTP port
+  #    - "8090:8080" # traefik UI
+  #  volumes:
+  #    - "/var/run/docker.sock:/var/run/docker.sock:ro"
   girder:
+    # build is needed to update the static-public-path on node package builds
+    # image: dsarchive/dsa_common
     build: .
     privileged: true
     # Set CURRENT_UID to your user id (e.g., `CURRENT_UID=$(id -u):$(id -g)`)
@@ -23,15 +26,16 @@ services:
     restart: unless-stopped
     # Set DSA_PORT to expose the interface on another port (default 8080).
     ports:
-      #- "${DSA_PORT:-8080}:8080"
-      - "8080-8089:8080"
+      - "${DSA_PORT:-8080}:8080"
+      # - "8080-8089:8080"
     environment:
-      - GIRDER_CONFIG=/conf/girder.local.conf
+      - GIRDER_CONFIG=/conf/girder.cfg
     command: bash -c 'python /conf/girder_config.py && girder mount /fuse && girder serve'
     volumes:
       # Default assetstore
+      - /gpfs/mskmind_emc/data_large/pathology:/assetstore2
       - /gpfs/mskmind_ess/pathology_images:/assetstore
-      # Location of girder.local.conf and girder_config.py
+      # Location of girder.cfg and girder_config.py
       - .:/conf
       # Location to store logs
       - /gpfs/mskmind_ess/dsa/logs:/logs
@@ -45,16 +49,16 @@ services:
       # Add additional mounts here to get access to existing files on your
       # system.  Also add them to the worker container to reduce copying.
     ### modify REPLACE_WITH_HOST
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.girder.rule=Host(`REPLACE_WITH_HOST`)"
-      - "traefik.http.routers.girder.entrypoints=web"  
+    #labels:
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.girder.rule=Host(`REPLACE_WITH_HOST`)"
+    #  - "traefik.http.routers.girder.entrypoints=web"  
     depends_on:
       - mongodb
       - memcached
       - rabbitmq
   mongodb:
-    image: "mongo:latest"
+    image: "mongo:latest" 
     # Set CURRENT_UID to your user id (e.g., `CURRENT_UID=$(id -u):$(id -g)`)
     # so that database files and logs are owned by yourself.
     user: ${CURRENT_UID}
@@ -66,8 +70,8 @@ services:
       - /gpfs/mskmind_ess/dsa/logs:/var/log/mongodb
     # Uncomment to allow access to the database from outside of the docker
     # network.
-    # ports:
-    #  - "27017"
+    ports:
+     - "27017:27017"
   memcached:
     image: memcached
     command: -m 4096
@@ -75,30 +79,32 @@ services:
     # Uncomment to allow access to memcached from outside of the docker network
     # ports:
     #   - "11211"
+  
   rabbitmq:
     image: "rabbitmq:latest"
     restart: unless-stopped
     # Uncomment to allow access to rabbitmq from outside of the docker network
     # ports:
     #   - "5672"
-  worker:
-    build: .
-    privileged: true
+  # (optional) worker is only needed for histomicsTK jobs
+  #worker:
+  #  build: .
+  #  privileged: true
     # Set CURRENT_UID to your user id (e.g., `CURRENT_UID=$(id -u):$(id -g)`)
     # so that logs and tmp files are owned by yourself.
-    user: ${CURRENT_UID}
-    restart: unless-stopped
-    command: |
-      bash -c "TEMP=${TEMP:-/gpfs/mskmind_ess/dsa/tmp} python -m girder_worker --concurrency=2 -Ofair --prefetch-multiplier=1 >>/logs/worker.log 2>&1"
-    volumes:
+  #  user: ${CURRENT_UID}
+  #  restart: unless-stopped
+  #  command: |
+  #    bash -c "TEMP=${TEMP:-/gpfs/mskmind_ess/dsa/tmp} python -m girder_worker --concurrency=2 -Ofair --prefetch-multiplier=1 >>/logs/worker.log 2>&1"
+  #  volumes:
       # Location to store logs
-      - /gpfs/mskmind_ess/dsa/logs:/logs
+  #    - /gpfs/mskmind_ess/dsa/logs:/logs
       # Needed to use slicer_cli_web to run docker containers
-      - /usr/bin/docker:/usr/bin/docker:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+  #    - /usr/bin/docker:/usr/bin/docker:ro
+  #    - /var/run/docker.sock:/var/run/docker.sock
       # Needed to allow transferring data to slicer_cli_web docker containuers
-      - ${TEMP:-/gpfs/mskmind_ess/dsa/tmp}:${TEMP:-/gpfs/mskmind_ess/dsa/tmp}
+  #    - ${TEMP:-/gpfs/mskmind_ess/dsa/tmp}:${TEMP:-/gpfs/mskmind_ess/dsa/tmp}
       # Assetstore to reduce copying
-      - /gpfs/mskmind_ess/pathology_images:/assetstore
-    depends_on:
-      - rabbitmq
+  #    - /gpfs/mskmind_ess/pathology_images:/assetstore
+  #  depends_on:
+  #    - rabbitmq

@@ -1,6 +1,0 @@
-Luna Tutorial
-=============
-
-```
-$ make help
-```
