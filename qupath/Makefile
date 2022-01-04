@@ -3,7 +3,8 @@ export MYGID := $(shell id -g)
 export SINGULARITY_CACHEDIR := $(PWD)/.singularity/cache
 export SINGULARITY_TMPDIR := $(PWD)/.singularity/tmp
 export SINGULARITY_LOCALCACHEDIR := $(PWD)/.singularity/lcache
-IMAGE = docker://druvpatel/qupath-stardist:latest
+STARDIST_DOCKER_IMAGE = docker://druvpatel/qupath-stardist:latest
+VERSION = 0.3.1
 
 .PHONY: all help build clean test run
 .DEFAULT_GOAL := help
@@ -42,52 +43,60 @@ help:
 build:      ## build docker image
 	docker build -t qupath/latest .
 
+build-cpu:     ## build qupath-cpu image
+	docker build --build-arg USER_ID=$(MYUID) --build-arg USER_NAME=$(USER) -t $(USER)-qupath-cpu/latest -f ./dockerfile-cpu .
 
 init:
 	./init_singularity_env.sh
 
-
-clean:      ## cleanup
-	docker system prune 
-
+clean-cpu:      ## cleanup container by image name
+	-docker rm $$(docker container ls -aqf "ancestor=$(USER)-qupath-cpu/latest")
 
 clean-images:  ## remove qupath-stardist docker and singularity images. WARNING: Will affect other users!
-	docker rmi -f $(IMAGE)
+	docker rmi -f $(STARDIST_DOCKER_IMAGE)
 	singularity cache clean -f
 	rm qupath-stardist_latest.sif
 
+run-cpu: clean-cpu
+	docker run --name $(USER)-qupath-cpu \
+	-v $(PWD)/data:/data \
+	-v $(PWD)/models:/models \
+	-v $(PWD)/scripts:/scripts \
+	-v $(PWD)/detections:/detections \
+	-u $(MYUID):$(MYUID) \
+	qupath-cpu/latest \
+	java \
+	-Djava.awt.headless=true \
+	-Djava.library.path=/qupath-stardist/build/libs:/qupath/build/dist/QuPath/lib/app \
+	-cp /qupath/build/dist/QuPath/lib/app/qupath-app-$(VERSION).jar:/qupath-stardist/build/libs/*:/qupath/build/dist/QuPath/lib/app/* \
+	qupath.QuPath \
+	script --image /$(image) /$(script) 
 
-run-cpu:     ## run a script within the star_dist service. This run uses cpus.
-	docker-compose -f docker-compose.yml run \
-           star_dist \
-              java -Djava.awt.headless=true -Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app \
- 		-jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
- 		  script --image /$(image) /$(script)
-
+## not tested below
 run-gpu:     ## run a script within the star_dist service. This run uses gpus.
 	docker-compose -f docker-compose.yml run \
            -e TF_FORCE_GPU_ALLOW_GROWTH=true -e PER_PROCESS_GPU_MEMORY_FRACTION=0.8 \
               star_dist \
-                 java -Djava.awt.headless=true -Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app \
-                    -jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar \
+                 java -Djava.awt.headless=true -Djava.library.path=/qupath-gpu/build/dist/QuPath-$(VERSION)/lib/app \
+                    -jar /qupath-gpu/build/dist/QuPath-$(VERSION)/lib/app/qupath-$(VERSION).jar \
                        script --image /$(image) /$(script)
 
 
 build-singularity: init  ## pulls qupath-stardist image and converts it to a singularity image
-	singularity pull --force  $(IMAGE)
+	singularity pull --force  $(STARDIST_DOCKER_IMAGE)
 	singularity cache list -v
 
 
 run-singularity-gpu: ## runs the qupath-stardist image in gpu mode
 	singularity run --env TF_FORCE_GPU_ALLOW_GROWTH=true,PER_PROCESS_GPU_MEMORY_FRACTION=0.8  -B $(PWD)/data:/data,$(PWD)/detections:/detections,$(PWD)/models:/models,$(PWD)/scripts:/scripts  --nv $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
-	-Djava.library.path=/qupath-gpu/build/dist/QuPath-0.2.3/lib/app  \
-	-jar /qupath-gpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar  \
+	-Djava.library.path=/qupath-gpu/build/dist/QuPath-$(VERSION)/lib/app  \
+	-jar /qupath-gpu/build/dist/QuPath-$(VERSION)/lib/app/qupath-$(VERSION).jar  \
 	script --image /$(image) /$(script)
 
 run-singularity-cpu: ## runs the qupath-stardist image in cpu mode
 	singularity run -B $(PWD)/data:/data,$(PWD)/detections:/detections,$(PWD)/models:/models,$(PWD)/scripts:/scripts  $(PWD)/qupath-stardist_latest.sif java -Djava.awt.headless=true \
-	-Djava.library.path=/qupath-cpu/build/dist/QuPath-0.2.3/lib/app  \
-	-jar /qupath-cpu/build/dist/QuPath-0.2.3/lib/app/qupath-0.2.3.jar  \
+	-Djava.library.path=/qupath-cpu/build/dist/QuPath-$(VERSION)/lib/app  \
+	-jar /qupath-cpu/build/dist/QuPath-$(VERSION)/lib/app/qupath-$(VERSION).jar  \
 	script --image /$(image) /$(script)
 
 

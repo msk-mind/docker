@@ -69,7 +69,15 @@ To restart with a clean slate, simply delete the `.singularity` sub-directory an
 
 
 # Section 2: Building and Running Image with Docker (WIP)
-## Section 2: Part 1 -- Build image using Dockerfile
+## Section 2: Part 1a -- Build image using dockerfile-cpu
+
+For runnnig on CPU, build the 
+
+```
+make build-cpu
+```
+
+## Section 2: Part 1b -- Build image using Dockerfile w/ GPU support
 
 For building with Docker, there is a small setup step that needs to be done. Using the following links, download these .deb files and copy them to this directory `docker/qupath/`. You will have to create a developer nvidia account in order to do this.
 
@@ -111,13 +119,12 @@ script=scripts/sample_scripts/import_annot_from_api.groovy \
 image=data/sample_data/HobI20-934829783117.svs run-cpu
 ```
 
-If successful, `stardist_example.groovy` will output a geojson of cell objects to data/test.geojson 
+If successful, `stardist_example3.groovy` will output PNG masks in `data/` and a geojson of cell objects to `detections/stardist_object_detection_results.geojson` 
 ```
 make host="" \
-script=scripts/sample_scripts/hne/stardist_example.groovy \
-image=data/sample_data/CMU-1-Small-Region_2.svs run-gpu
+script=scripts/sample_scripts/stardist_example3.groovy \
+image=data/sample_data/CMU-1-Small-Region_2.svs run-cpu
 ```
-
 
 
 ## Section 2: Part 3 -- Cleanup Docker container
