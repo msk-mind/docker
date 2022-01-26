@@ -33,5 +33,5 @@ jobs:
         with:
           context: stardist_cuda
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: latest
           labels: ${{ steps.meta.outputs.labels }}
