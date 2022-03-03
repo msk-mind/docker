@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y sudo tree wget git binutils libgl1-mesa
 RUN git clone https://github.com/qupath/qupath \
     && cd qupath \
     && git checkout tags/v0.3.2 -b v0.3.2 \
-    && ./gradlew clean jpackage -Pcuda-redist
+    && ./gradlew clean jpackage
 
 ENV PATH=/qupath/build/dist/QuPath/bin/:$PATH
 
