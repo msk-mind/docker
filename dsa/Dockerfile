@@ -18,6 +18,10 @@ RUN apt-get update && \
     apt-get install -y fuse && \
     apt-get install -y sudo && \
     apt-get install -y libopenblas-dev && \
+    apt-get install -y libsasl2-dev && \
+    apt-get install -y python-dev && \
+    apt-get install -y libldap2-dev && \
+    apt-get install -y libssl-dev && \
     rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -s /bin/bash -G sudo $user && echo "$user:docker"
@@ -42,6 +46,7 @@ RUN pip install --pre --no-cache-dir \
     # girder-virtual-folders or girder-dicom-viewer) \
     girder-dicom-viewer \
     girder-thumbnails \
+    girder-ldap \
     # Use prebuilt wheels whenever possible \
     --find-links https://girder.github.io/large_image_wheels
 
