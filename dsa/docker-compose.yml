@@ -28,6 +28,10 @@ services:
     ports:
       - "${DSA_PORT:-8080}:8080"
       # - "8080-8089:8080"
+    # smtp email
+    expose:
+      - 25
+      - 587
     environment:
       - GIRDER_CONFIG=/conf/girder.cfg
     command: bash -c 'python /conf/girder_config.py && girder mount /fuse && girder serve'
