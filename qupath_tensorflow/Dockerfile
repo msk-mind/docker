@@ -1,17 +1,21 @@
-FROM nvidia/cuda:12.1.1-cudnn8-devel-centos7
+FROM nvidia/cuda:12.1.1-cudnn8-devel-ubi8
 MAINTAINER MSK-MIND
 LABEL "app"="qupath"
 LABEL "version"="0.2.3"
 LABEL "description"="qupath bundled with stardist and tensorflow for CPUs. Run QuPath-gpu for GPU support, and QuPath-cpu for CPU only"
 
-RUN yum install -y sudo tree wget git vim  && \
-    yum install -y binutils  && \
-    yum install -y libxml2-devel libtiff-devel glib2-devel libxcb-devel libXrender-devel libxcb-devel && \
-    yum install -y mesa-libGL && \
-    yum install -y epel-release && \
-    yum install -y openslide && \
-    yum install -y xz && \
-    yum install -y unzip
+
+RUN yum install --disablerepo=* --enablerepo=ubi-8-appstream-rpms --enablerepo=ubi-8-baseos-rpms -y \
+    sudo wget git vim binutils \
+    binutils \
+    libxml2-devel libtiff-devel glib2-devel libxcb-devel libxcb-devel \
+    mesa-libGL \
+    xz \
+    unzip
+
+RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+
+RUN yum install -y openslide
 
 # download this RPM from https://www.oracle.com/java/technologies/javase/jdk14-archive-downloads.html
 COPY jdk-14.0.2_linux-x64_bin.rpm .
