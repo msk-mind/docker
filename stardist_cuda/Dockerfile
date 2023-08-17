@@ -21,11 +21,14 @@ RUN git clone --branch v0.4.3 https://github.com/qupath/qupath.git /qupath-gpu &
 RUN cp qupath-extension-stardist-0.4.0.jar /qupath-gpu/build/dist/QuPath/lib/app/
 
 RUN ln -s /qupath-gpu/build/dist/QuPath/bin/QuPath /usr/local/bin/QuPath-gpu
+RUN ln -s /QuPath/bin/QuPath /QuPath/bin/QuPath-cpu
+
+RUN chmod ugo+rx /qupath-gpu/build/dist/QuPath/bin/QuPath /QuPath/bin/QuPath
 
 # Update Qupath.cfg
 RUN sed -i '/Application/ a app.classpath=$APPDIR/qupath-extension-stardist-0.4.0.jar' /QuPath/lib/app/QuPath.cfg /qupath-gpu/build/dist/QuPath/lib/app/QuPath.cfg &&  \
     sed -i '/JavaOptions/ a java-options=-Djava.awt.headless=true' /QuPath/lib/app/QuPath.cfg /qupath-gpu/build/dist/QuPath/lib/app/QuPath.cfg && \
-    sed -i 's/-XX.*/-Xmx36G/' /qupath-gpu/build/dist/QuPath/lib/app/QuPath.cfg /QuPath/lib/app/QuPath.cfg
+    sed -i 's/-XX.*/-Xmx64G/' /qupath-gpu/build/dist/QuPath/lib/app/QuPath.cfg /QuPath/lib/app/QuPath.cfg
 
 # Checkout models
 RUN git clone https://github.com/qupath/models
