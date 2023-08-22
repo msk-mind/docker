@@ -73,7 +73,7 @@ logger.info("Started writing cell object data...")
 saveDetectionMeasurements('/output_dir/cell_detections.tsv')
 
 logger.info("Started writing cell object geojson...")
-def detection_objects = getDetectionObjects()
+def detection_objects = ['type': 'FeatureCollection', 'features': getDetectionObjects()]
 def detection_geojson = GsonTools.getInstance(true)
 new File('/output_dir/cell_detections.geojson').withWriter('UTF-8') {
     detection_geojson.toJson(detection_objects, it)
